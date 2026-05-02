@@ -1,0 +1,228 @@
+.container {
+  display: flex;
+  height: auto;
+  overflow: hidden;
+}
+
+.settingView {
+  width: 300px;
+  min-width: 300px;
+  overflow-y: auto;
+}
+
+.settingView::-webkit-scrollbar {
+  display: none;
+}
+
+.fitHighToFrame {
+  height: 100vh;
+}
+
+.dynamicContent {
+  flex: 1;
+}
+
+.hero {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.96),
+      rgba(248, 248, 248, 0.96)
+    ),
+    var(--figma-color-bg);
+}
+
+.heroText {
+  color: var(--figma-color-text-secondary);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 64px;
+  padding: 8px;
+  color: var(--figma-color-text);
+  background: var(--figma-color-bg);
+  border: 1px solid var(--figma-color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.menuItem:hover {
+  background: var(--figma-color-bg-hover);
+}
+
+.menuIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  color: var(--figma-color-text);
+  background: var(--figma-color-bg);
+  border: 1px solid var(--figma-color-border);
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.menuContent {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menuTitle {
+  color: var(--figma-color-text);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.menuDescription {
+  color: var(--figma-color-text-secondary);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.menuArrow {
+  color: var(--figma-color-text-secondary);
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.backIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--figma-color-text);
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background: var(--figma-color-bg);
+}
+
+.tab {
+  flex: 1;
+  min-height: 32px;
+  padding: 8px;
+  color: var(--figma-color-text-secondary);
+  background: var(--figma-color-bg-secondary);
+  border: 1px solid var(--figma-color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.tab:hover {
+  background: var(--figma-color-bg-hover);
+}
+
+.activeTab {
+  color: var(--figma-color-text);
+  background: var(--figma-color-bg);
+  border-color: var(--figma-color-border-selected);
+}
+
+.sectionIntro {
+  background: var(--figma-color-bg);
+}
+
+.sectionTitle {
+  color: var(--figma-color-text);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.sectionDescription {
+  color: var(--figma-color-text-secondary);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.githubCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 64px;
+  padding: 8px;
+  color: var(--figma-color-text);
+  background: var(--figma-color-bg-secondary);
+  border: 1px solid var(--figma-color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.githubCard:hover {
+  background: var(--figma-color-bg-hover);
+}
+
+.downloadPanel {
+  background: var(--figma-color-bg-secondary);
+  border: 1px solid var(--figma-color-border);
+  border-radius: 8px;
+}
+
+.styleNameInput {
+  width: 100%;
+}
+
+.about {
+  justify-content: space-between;
+  padding-top: 6px;
+}
+
+.about a {
+  color: var(--figma-color-text);
+}
+
+.codeLine {
+  display: inline-block;
+  background-color: var(--figma-color-bg-pressed);
+  outline: 1px solid var(--figma-color-bg-disabled);
+  font-style: italic;
+  padding: 0 4px;
+  margin: 0 2px;
+  border-radius: 3px;
+}
+
+.heightResizer {
+  width: 15%;
+  margin: 0 auto 8px;
+  height: 4px;
+  border-radius: 4px;
+  background-color: var(--figma-color-border);
+  cursor: ns-resize;
+  flex-shrink: 0;
+}
+
+.heightResizer:hover {
+  background-color: var(--figma-color-icon-secondary);
+}
+
+.resizingCursor {
+  cursor: ns-resize;
+  user-select: none;
+}

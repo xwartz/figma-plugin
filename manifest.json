@@ -1,0 +1,42 @@
+{
+  "name": "Design Handoff Bridge",
+  "id": "1234567890",
+  "api": "1.0.0",
+  "main": "code.js",
+  "editorType": ["figma"],
+  "ui": "ui.html",
+  "menu": [
+    {
+      "name": "Export Design Token Json",
+      "command": "export-design-token-json"
+    },
+    {
+      "name": "Send Design Token to Issue",
+      "command": "send-design-token-to-issue"
+    },
+    {
+      "name": "Send Design Primitive to Issue",
+      "command": "send-design-primitive-to-issue"
+    },
+    {
+      "separator": true
+    },
+    {
+      "name": "Settings",
+      "command": "settings"
+    },
+    {
+      "name": "Clear Cache",
+      "command": "clear-cache"
+    },
+    {
+      "name": "Help",
+      "command": "help"
+    }
+  ],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["https://api.github.com", "https://github.com"],
+    "reasoning": "The plugin creates design handoff issues and syncs token export files to user-configured GitHub repositories."
+  }
+}

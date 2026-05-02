@@ -1,0 +1,81 @@
+name: Design Primitive Handoff
+description: Handoff a Figma primitive component change for CI bundling and AI implementation.
+title: '[Design Primitive]: '
+labels: ['design:handoff']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form only for reusable UI primitives that belong in `packages/ui`.
+  - type: input
+    id: figma_url
+    attributes:
+      label: Figma URL
+      description: Link to the exact Figma frame or component. The URL must include `node-id`.
+      placeholder: https://www.figma.com/design/...?...node-id=...
+    validations:
+      required: true
+  - type: input
+    id: primitive_name
+    attributes:
+      label: Primitive name
+      description: The component name to add or update.
+      placeholder: icon-button
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One sentence explaining what changes and why.
+      placeholder: Add an icon button primitive for compact actions.
+    validations:
+      required: true
+  - type: textarea
+    id: anatomy
+    attributes:
+      label: Anatomy
+      description: What anatomy, slots, and required or optional parts make up the component?
+      placeholder: root, icon slot, label, loading indicator
+    validations:
+      required: true
+  - type: input
+    id: variants
+    attributes:
+      label: Variants
+      description: Which visual variants, sizes, or density options are needed?
+      placeholder: 'variant: primary / secondary; size: sm / lg'
+    validations:
+      required: true
+  - type: input
+    id: states
+    attributes:
+      label: States
+      description: Which states must be covered?
+      placeholder: default, hover, focus, disabled, loading
+    validations:
+      required: true
+  - type: textarea
+    id: usage_notes
+    attributes:
+      label: Usage notes
+      description: When should this primitive be used or avoided?
+      placeholder: Minimum 48px touch target; use only when the icon meaning is clear.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What must be true before this work is accepted?
+      value: |
+        - [ ] Primitive is implemented in `packages/ui/src/components/`.
+        - [ ] Variants and states are covered by Storybook stories.
+    validations:
+      required: true
+  - type: textarea
+    id: optional_references
+    attributes:
+      label: Optional References
+      description: Optional Figma Make code or extra notes.
+      placeholder: Add references only if they help implementation.

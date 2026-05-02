@@ -1,0 +1,60 @@
+{
+  "name": "design-handoff-bridge",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xwartz/figma-plugin.git"
+  },
+  "description": "Design Handoff Bridge helps designers export design tokens and create GitHub handoff issues from Figma selections.",
+  "keywords": [
+    "figma",
+    "plugin",
+    "tokens",
+    "design tokens",
+    "design system",
+    "design handoff",
+    "github issues"
+  ],
+  "author": {
+    "name": "xwartz",
+    "url": "https://github.com/xwartz"
+  },
+  "scripts": {
+    "build:plugin": "node scripts/build-plugin.mjs",
+    "build": "npm run build:plugin",
+    "dev": "node --watch-path=src --watch-path=manifest.json scripts/build-plugin.mjs",
+    "format": "biome format --write .",
+    "lint": "biome lint .",
+    "check": "biome check .",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "decimal.js": "^10.5.0",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.3",
+    "@biomejs/biome": "^2.4.14",
+    "@figma/plugin-typings": "^1.100.0",
+    "@octokit/core": "^5.0.0",
+    "@types/jszip": "^3.4.1",
+    "@types/node": "^25.6.0",
+    "@types/react": "^18.0.33",
+    "@types/react-dom": "^18.0.11",
+    "buffer": "^6.0.3",
+    "clipboard-copy": "^4.0.1",
+    "react": "^18.2.0",
+    "react-dev-utils": "^12.0.1",
+    "react-dom": "^18.2.0",
+    "react-figma-ui": "git+https://git@github.com/PavelLaptev/react-figma-ui.git#4c8d20dbd911c0008fd4d0b20280f14404f186e7",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.10",
+    "vitest": "^3.1.1",
+    "yaml": "^2.8.3"
+  },
+  "packageManager": "pnpm@10.33.1"
+}

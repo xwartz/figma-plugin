@@ -1,0 +1,14 @@
+:global(html)::-webkit-scrollbar,
+:global(body)::-webkit-scrollbar {
+  display: none;
+}
+
+.container {
+  display: flex;
+  overflow: hidden;
+  height: auto;
+}
+
+.container::-webkit-scrollbar {
+  display: none;
+}

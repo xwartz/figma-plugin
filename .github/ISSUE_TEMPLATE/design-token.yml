@@ -1,0 +1,81 @@
+name: Design Token Handoff
+description: Handoff a Figma token change for CI bundling and AI implementation.
+title: '[Design Token]: '
+labels: ['design:handoff']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form only for design token changes. The Figma plugin syncs `design-tokens.json` to the export branch and fills **Token export** with the repository file link.
+  - type: input
+    id: figma_url
+    attributes:
+      label: Figma URL
+      description: Link to the exact Figma frame or component. The URL must include `node-id`.
+      placeholder: https://www.figma.com/design/...?...node-id=...
+    validations:
+      required: true
+  - type: input
+    id: token_group
+    attributes:
+      label: Token group
+      description: The token area being changed.
+      placeholder: color/action
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One sentence explaining what changes and why.
+      placeholder: Adjust primary action colors for better clarity across light and dark modes.
+    validations:
+      required: true
+  - type: textarea
+    id: semantic_intent
+    attributes:
+      label: Semantic intent
+      description: What meaning should this token express?
+      placeholder: Primary action background and foreground.
+    validations:
+      required: true
+  - type: input
+    id: modes
+    attributes:
+      label: Modes
+      description: Which modes are affected?
+      placeholder: light / dark
+    validations:
+      required: true
+  - type: input
+    id: affected_primitives
+    attributes:
+      label: Affected primitives
+      description: Which primitives may visually change?
+      placeholder: Button, IconButton, ActionBar
+    validations:
+      required: true
+  - type: input
+    id: token_export
+    attributes:
+      label: Token export
+      description: GitHub repository file link for `design-tokens.json`.
+      placeholder: '[design-tokens.json](https://github.com/owner/repo/blob/design-system-exports/issues/1/design-tokens.json)'
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What must be true before this work is accepted?
+      value: |
+        - [ ] `globals.css` semantic tokens are updated.
+        - [ ] `DESIGN.md` documents the token meaning.
+    validations:
+      required: true
+  - type: textarea
+    id: optional_references
+    attributes:
+      label: Optional References
+      description: Optional Figma Make code or extra notes.
+      placeholder: Add references only if they help implementation.
