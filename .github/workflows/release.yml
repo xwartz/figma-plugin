@@ -43,4 +43,4 @@ jobs:
           npx --yes conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 1
           git add CHANGELOG.md
           git diff --staged --quiet || git commit -m "docs: update CHANGELOG for ${{ github.ref_name }}"
-          git push origin HEAD:main
+          git push origin HEAD:master
