@@ -36,6 +36,7 @@ interface ViewProps {
   handoffKind?: 'token' | 'primitive'
   isSending?: boolean
   onSaveSuccess?: () => void
+  onSaveError?: (params: ToastIPropsI) => void
   onSaveAndSend?: (config: GithubCredentialsI) => void
 }
 
@@ -252,6 +253,7 @@ export const ServerSettingsView = (props: ViewProps) => {
     handoffKind,
     isSending = false,
     onSaveSuccess,
+    onSaveError,
     onSaveAndSend,
   } = props
   const preferredTemplateKind =
@@ -635,6 +637,14 @@ export const ServerSettingsView = (props: ViewProps) => {
     const nextConfig = saveConfig()
 
     if (!nextConfig) {
+      onSaveError?.({
+        title: 'Github: Missing handoff fields',
+        message: 'Fill required fields before sending design handoff.',
+        options: {
+          type: 'error',
+          timeout: 8000,
+        },
+      })
       return
     }
 

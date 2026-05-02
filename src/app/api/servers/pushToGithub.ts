@@ -158,7 +158,7 @@ export const pushToGithub = async (
   credentials: GithubCredentialsI,
   tokens: SerializableObject,
   toastCallback: (props: ToastIPropsI) => void,
-) => {
+): Promise<boolean> => {
   const ghToken = credentials.token
   const { owner: ghUser, repo: ghRepo } = parseGithubRepoTarget(credentials)
   const branch = credentials.branch || 'design-system-exports'
@@ -182,7 +182,7 @@ export const pushToGithub = async (
         timeout: 8000,
       },
     })
-    return
+    return false
   }
 
   const validationError = validateTemplateHandoff({
@@ -204,7 +204,7 @@ export const pushToGithub = async (
         timeout: 8000,
       },
     })
-    return
+    return false
   }
 
   async function ensureBranchExists() {
@@ -401,6 +401,7 @@ export const pushToGithub = async (
         timeout: 8000,
       },
     })
+    return true
   } catch (error) {
     console.error('Error syncing Github handoff:', error)
     toastCallback({
@@ -411,5 +412,6 @@ export const pushToGithub = async (
         timeout: 8000,
       },
     })
+    return false
   }
 }

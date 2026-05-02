@@ -206,8 +206,19 @@ export const SettingsView = (props: ViewProps) => {
     setPendingGithubCredentials(credentials)
     pendingGithubCredentialsRef.current = credentials
 
-    const allEnabledServers = Object.keys(JSONsettingsConfig.servers).filter(
-      (serverId) => JSONsettingsConfig.servers[serverId].isEnabled,
+    const nextServers = {
+      ...JSONsettingsConfig.servers,
+      ...(credentials
+        ? {
+            github: {
+              ...JSONsettingsConfig.servers.github,
+              ...credentials,
+            },
+          }
+        : {}),
+    }
+    const allEnabledServers = Object.keys(nextServers).filter(
+      (serverId) => nextServers[serverId].isEnabled,
     )
 
     // send command to figma controller
@@ -291,19 +302,40 @@ export const SettingsView = (props: ViewProps) => {
         }
 
         if (role === 'push') {
-          if (server.includes('github')) {
+          try {
+            if (!server.includes('github')) {
+              toastRef.current?.show({
+                title: 'Github: Not configured',
+                message:
+                  'Enable GitHub settings before sending design handoff.',
+                options: {
+                  type: 'error',
+                  timeout: 8000,
+                },
+              })
+              return
+            }
+
             const githubCredentials =
               pendingGithubCredentialsRef.current ??
               pendingGithubCredentials ??
               JSONsettingsConfig.servers.github
-            await pushToGithub(githubCredentials, tokens, (params) => {
-              toastRef.current?.show(params)
-            })
-          }
+            const didPushToGithub = await pushToGithub(
+              githubCredentials,
+              tokens,
+              (params) => {
+                toastRef.current?.show(params)
+              },
+            )
 
-          setIsPushing(false)
-          setPendingGithubCredentials(undefined)
-          pendingGithubCredentialsRef.current = undefined
+            if (didPushToGithub) {
+              setCurrentView('main')
+            }
+          } finally {
+            setIsPushing(false)
+            setPendingGithubCredentials(undefined)
+            pendingGithubCredentialsRef.current = undefined
+          }
         }
       }
     }
@@ -313,7 +345,12 @@ export const SettingsView = (props: ViewProps) => {
     return () => {
       window.removeEventListener('message', handleMessage)
     }
-  }, [JSONsettingsConfig, pendingGithubCredentials, setGeneratedTokens])
+  }, [
+    JSONsettingsConfig,
+    pendingGithubCredentials,
+    setCurrentView,
+    setGeneratedTokens,
+  ])
 
   useEffect(() => {
     if (!pluginCommand) {
@@ -870,6 +907,9 @@ export const SettingsView = (props: ViewProps) => {
           mode="handoff"
           handoffKind="token"
           isSending={isPushing}
+          onSaveError={(params) => {
+            toastRef.current?.show(params)
+          }}
           onSaveAndSend={getTokensForPush}
         />
       )
@@ -883,6 +923,9 @@ export const SettingsView = (props: ViewProps) => {
           mode="handoff"
           handoffKind="primitive"
           isSending={isPushing}
+          onSaveError={(params) => {
+            toastRef.current?.show(params)
+          }}
           onSaveAndSend={getTokensForPush}
         />
       )
