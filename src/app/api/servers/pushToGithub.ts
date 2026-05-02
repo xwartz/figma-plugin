@@ -17,6 +17,11 @@ const HANDOFF_LABEL = 'design:handoff'
 const DEFAULT_TOKEN_COMMIT_MESSAGE = 'chore(design): update design tokens'
 const DEFAULT_PRIMITIVE_COMMIT_MESSAGE =
   'chore(design): update primitive handoff'
+const GITHUB_API_VERSION = '2026-03-10'
+const GITHUB_REQUEST_HEADERS = {
+  accept: 'application/vnd.github+json',
+  'X-GitHub-Api-Version': GITHUB_API_VERSION,
+}
 const ISSUE_NUMBER_TEMPLATE_LITERAL = '$' + '{issueNumber}'
 
 function hasText(value?: string) {
@@ -167,6 +172,9 @@ export const pushToGithub = async (
   )
 
   const octokit = new Octokit({ auth: ghToken })
+  const githubRequest = octokit.request.defaults({
+    headers: GITHUB_REQUEST_HEADERS,
+  })
   const templateFile =
     credentials.templateFile ||
     getLocalGithubIssueTemplateFileName(credentials.preferredTemplateKind)
@@ -209,7 +217,7 @@ export const pushToGithub = async (
 
   async function ensureBranchExists() {
     try {
-      await octokit.request('GET /repos/{owner}/{repo}/git/ref/{ref}', {
+      await githubRequest('GET /repos/{owner}/{repo}/git/ref/{ref}', {
         owner: ghUser,
         repo: ghRepo,
         ref: `heads/${branch}`,
@@ -219,12 +227,12 @@ export const pushToGithub = async (
         throw error
       }
 
-      const repository = await octokit.request('GET /repos/{owner}/{repo}', {
+      const repository = await githubRequest('GET /repos/{owner}/{repo}', {
         owner: ghUser,
         repo: ghRepo,
       })
       const defaultBranch = repository.data.default_branch
-      const defaultRef = await octokit.request(
+      const defaultRef = await githubRequest(
         'GET /repos/{owner}/{repo}/git/ref/{ref}',
         {
           owner: ghUser,
@@ -233,7 +241,7 @@ export const pushToGithub = async (
         },
       )
 
-      await octokit.request('POST /repos/{owner}/{repo}/git/refs', {
+      await githubRequest('POST /repos/{owner}/{repo}/git/refs', {
         owner: ghUser,
         repo: ghRepo,
         ref: `refs/heads/${branch}`,
@@ -243,28 +251,25 @@ export const pushToGithub = async (
   }
 
   async function createDraftIssue() {
-    const response = await octokit.request(
-      'POST /repos/{owner}/{repo}/issues',
-      {
-        owner: ghUser,
-        repo: ghRepo,
-        title: renderGithubIssueTitle({
-          template: issueTemplate,
-          values: getIssueFieldValues({
-            credentials,
-            tokenExportUrl: shouldSyncTokenExport
-              ? 'Pending token export sync.'
-              : '',
-          }),
-        }),
-        body: buildIssueBody({
+    const response = await githubRequest('POST /repos/{owner}/{repo}/issues', {
+      owner: ghUser,
+      repo: ghRepo,
+      title: renderGithubIssueTitle({
+        template: issueTemplate,
+        values: getIssueFieldValues({
           credentials,
-          template: issueTemplate,
-          tokenExportUrl: 'Pending token export sync.',
+          tokenExportUrl: shouldSyncTokenExport
+            ? 'Pending token export sync.'
+            : '',
         }),
-        labels: issueLabels,
-      },
-    )
+      }),
+      body: buildIssueBody({
+        credentials,
+        template: issueTemplate,
+        tokenExportUrl: 'Pending token export sync.',
+      }),
+      labels: issueLabels,
+    })
 
     return response.data.number
   }
@@ -276,7 +281,7 @@ export const pushToGithub = async (
     issueNumber: number
     tokenExportUrl: string
   }) {
-    await octokit.request('PATCH /repos/{owner}/{repo}/issues/{issue_number}', {
+    await githubRequest('PATCH /repos/{owner}/{repo}/issues/{issue_number}', {
       owner: ghUser,
       repo: ghRepo,
       issue_number: issueNumber,
@@ -289,7 +294,7 @@ export const pushToGithub = async (
   }
 
   async function addIssueLabels(issueNumber: number) {
-    await octokit.request(
+    await githubRequest(
       'POST /repos/{owner}/{repo}/issues/{issue_number}/labels',
       {
         owner: ghUser,
@@ -320,7 +325,7 @@ export const pushToGithub = async (
     }
 
     try {
-      const { data: file } = await octokit.request(
+      const { data: file } = await githubRequest(
         'GET /repos/{owner}/{repo}/contents/{path}',
         {
           ...commonParams,
@@ -328,7 +333,11 @@ export const pushToGithub = async (
         },
       )
 
-      return octokit.request('PUT /repos/{owner}/{repo}/contents/{path}', {
+      if (Array.isArray(file)) {
+        throw new Error(`Expected ${fileName} to be a file, but got a folder.`)
+      }
+
+      return githubRequest('PUT /repos/{owner}/{repo}/contents/{path}', {
         ...commonPushParams,
         sha: file.sha,
       })
@@ -337,7 +346,7 @@ export const pushToGithub = async (
         throw error
       }
 
-      return octokit.request(
+      return githubRequest(
         'PUT /repos/{owner}/{repo}/contents/{path}',
         commonPushParams,
       )
