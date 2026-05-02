@@ -1,0 +1,16 @@
+version: 1
+labels:
+  - label: 'type: bug(fix) 🐞'
+    title: '^fix\(.+\)?:.*'
+  - label: 'type: chore 🧹'
+    title: '^chore\(.+\)?:.*'
+  - label: 'type: docs 📋'
+    title: '^docs\(.+\)?:.*'
+  - label: 'type: feature ✨'
+    title: '^feat\(.+\)?:.*'
+  - label: 'type: refactor 🔧'
+    title: '^refactor\(.+\)?:.*'
+  - label: 'type: style 🎨'
+    title: '^style\(.+\)?:.*'
+  - label: 'type: test 🧪'
+    title: '^test\(.+\)?:.*'

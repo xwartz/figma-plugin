@@ -1,5 +1,7 @@
 # Design Handoff Bridge
 
+![thumbnail](docs/community-release/assets/thumbnail-1920x1080.png)
+
 Design Handoff Bridge is a Figma plugin for design-system teams that need a clean handoff from Figma to GitHub. It exports design tokens, opens prefilled handoff issues, and can sync a token JSON file into a target repository.
 
 Inspired by [TokensBrücke](https://github.com/tokens-bruecke/figma-plugin).
