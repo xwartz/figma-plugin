@@ -32,29 +32,27 @@
   },
   "type": "commonjs",
   "dependencies": {
-    "decimal.js": "^10.5.0",
-    "jszip": "^3.10.1"
+    "decimal.js": "10.6.0",
+    "jszip": "3.10.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.0",
-    "@babel/preset-env": "^7.29.3",
-    "@biomejs/biome": "^2.4.14",
-    "@figma/plugin-typings": "^1.100.0",
-    "@octokit/core": "^5.0.0",
-    "@types/jszip": "^3.4.1",
-    "@types/node": "^25.6.0",
-    "@types/react": "^18.0.33",
-    "@types/react-dom": "^18.0.11",
-    "buffer": "^6.0.3",
-    "clipboard-copy": "^4.0.1",
-    "react": "^18.2.0",
-    "react-dev-utils": "^12.0.1",
-    "react-dom": "^18.2.0",
-    "react-figma-ui": "git+https://git@github.com/PavelLaptev/react-figma-ui.git#4c8d20dbd911c0008fd4d0b20280f14404f186e7",
-    "typescript": "^6.0.3",
-    "vite": "^8.0.10",
-    "vitest": "^3.1.1",
-    "yaml": "^2.8.3"
+    "@babel/core": "7.29.0",
+    "@babel/preset-env": "7.29.3",
+    "@biomejs/biome": "2.4.14",
+    "@figma/plugin-typings": "1.125.0",
+    "@octokit/core": "7.0.6",
+    "@types/node": "25.6.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "buffer": "6.0.3",
+    "clipboard-copy": "4.0.1",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
+    "react-figma-ui": "github:PavelLaptev/react-figma-ui#4c8d20dbd911c0008fd4d0b20280f14404f186e7",
+    "typescript": "6.0.3",
+    "vite": "8.0.10",
+    "vitest": "4.1.5",
+    "yaml": "2.8.4"
   },
   "packageManager": "pnpm@10.33.1"
 }
