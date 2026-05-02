@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Design Handoff Bridge - Community Assets Variation 2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        --black: #000000;
+        --white: #ffffff;
+        --paper: #f6f6f2;
+        --surface: #ffffff;
+        --line: #d8d8d0;
+        --soft: #eeeeea;
+        --mist: #e8e8e0;
+        --charcoal: #111111;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--black);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      .page {
+        padding: 32px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 48px;
+      }
+
+      .asset {
+        display: grid;
+        gap: 16px;
+      }
+
+      .asset-label {
+        color: var(--black);
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 24px;
+        text-transform: uppercase;
+      }
+
+      .viewport {
+        width: 100%;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 32px;
+        background: var(--white);
+        box-shadow: 0 32px 96px rgba(0, 0, 0, 0.16);
+      }
+
+      .frame {
+        position: relative;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 16% 16%, #ffffff 0 0, transparent 320px),
+          linear-gradient(135deg, #ffffff 0%, #eeeeea 52%, #ffffff 100%);
+        color: var(--black);
+      }
+
+      .thumbnail {
+        width: 1920px;
+        height: 1080px;
+      }
+
+      .carousel {
+        width: 1600px;
+        height: 900px;
+      }
+
+      .frame::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(var(--line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: 64px 64px;
+        opacity: 0.36;
+      }
+
+      .pad-xl {
+        position: relative;
+        z-index: 1;
+        height: 100%;
+        padding: 80px;
+      }
+
+      .card {
+        border: 2px solid var(--black);
+        border-radius: 32px;
+        background: var(--surface);
+        box-shadow: 16px 16px 0 var(--black);
+      }
+
+      .soft-card {
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.92);
+      }
+
+      .dark-card {
+        border-radius: 32px;
+        background: var(--black);
+        color: var(--white);
+      }
+
+      .dark-card * {
+        color: var(--white);
+      }
+
+      .kicker {
+        color: var(--black);
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 32px;
+        text-transform: uppercase;
+      }
+
+      .headline {
+        color: var(--black);
+        font-size: 96px;
+        font-weight: 900;
+        letter-spacing: -4px;
+        line-height: 104px;
+      }
+
+      .carousel-title {
+        color: var(--black);
+        font-size: 72px;
+        font-weight: 900;
+        letter-spacing: -4px;
+        line-height: 80px;
+      }
+
+      .body-copy {
+        color: var(--black);
+        font-size: 28px;
+        font-weight: 600;
+        line-height: 40px;
+      }
+
+      .small-copy {
+        color: var(--black);
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 32px;
+      }
+
+      .tiny-copy {
+        color: var(--black);
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 24px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 8px 24px;
+        border: 2px solid var(--black);
+        border-radius: 999px;
+        background: var(--white);
+        color: var(--black);
+        font-size: 16px;
+        font-weight: 900;
+        line-height: 24px;
+      }
+
+      .pill-dark {
+        background: var(--black);
+        color: var(--white);
+      }
+
+      .node {
+        display: grid;
+        place-items: center;
+        width: 56px;
+        height: 56px;
+        border: 2px solid var(--black);
+        border-radius: 24px;
+        background: var(--white);
+        color: var(--black);
+        font-size: 20px;
+        font-weight: 900;
+        line-height: 24px;
+      }
+
+      .node-dark {
+        background: var(--black);
+        color: var(--white);
+      }
+
+      .bridge-line {
+        height: 8px;
+        border-radius: 999px;
+        background: var(--black);
+      }
+
+      .bridge-arch {
+        height: 144px;
+        border: 12px solid var(--black);
+        border-bottom: 0;
+        border-radius: 160px 160px 0 0;
+      }
+
+      .metric {
+        display: grid;
+        gap: 8px;
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--soft);
+      }
+
+      .mock-window {
+        overflow: hidden;
+        border: 2px solid var(--black);
+        border-radius: 32px;
+        background: var(--white);
+      }
+
+      .window-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 64px;
+        padding: 0 24px;
+        border-bottom: 2px solid var(--black);
+        background: var(--soft);
+      }
+
+      .dot {
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--black);
+        border-radius: 50%;
+        background: var(--white);
+      }
+
+      .code-row {
+        display: grid;
+        grid-template-columns: 160px 1fr 96px;
+        gap: 16px;
+        align-items: center;
+        min-height: 56px;
+        padding: 8px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .code-row:last-child {
+        border-bottom: 0;
+      }
+
+      .bar {
+        height: 16px;
+        border-radius: 999px;
+        background: var(--black);
+      }
+
+      .bar-soft {
+        background: var(--mist);
+        border: 1px solid var(--black);
+      }
+
+      .issue-card {
+        display: grid;
+        gap: 16px;
+        padding: 24px;
+        border: 2px solid var(--black);
+        border-radius: 24px;
+        background: var(--white);
+      }
+
+      .check {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        border: 2px solid var(--black);
+        border-radius: 16px;
+        background: var(--black);
+        color: var(--white);
+        font-size: 24px;
+        font-weight: 900;
+        line-height: 32px;
+      }
+
+      .rail {
+        display: grid;
+        gap: 16px;
+        padding: 24px;
+        border: 2px solid var(--black);
+        border-radius: 32px;
+        background: var(--white);
+      }
+
+      .rail-step {
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: 16px;
+        align-items: center;
+        min-height: 64px;
+      }
+
+      .terminal {
+        padding: 24px;
+        border-radius: 24px;
+        background: var(--black);
+      }
+
+      .terminal p {
+        margin: 0 0 8px;
+        color: var(--white);
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 32px;
+      }
+
+      .terminal p:last-child {
+        margin-bottom: 0;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 48px;
+        height: 100%;
+      }
+
+      .three {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+      }
+
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .center {
+        display: grid;
+        place-items: center;
+      }
+
+      .flow {
+        display: grid;
+        grid-template-columns: 320px 1fr 320px;
+        gap: 32px;
+        align-items: center;
+      }
+
+      .mini-document {
+        display: grid;
+        gap: 16px;
+        padding: 24px;
+        border: 2px solid var(--black);
+        border-radius: 24px;
+        background: var(--white);
+      }
+
+      .document-line {
+        height: 16px;
+        border-radius: 999px;
+        background: var(--black);
+      }
+
+      @media (max-width: 960px) {
+        .page {
+          padding: 16px;
+        }
+
+        .stack {
+          gap: 32px;
+        }
+
+        .viewport {
+          border-radius: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="stack">
+        <section class="asset">
+          <div class="asset-label">Thumbnail · 1920 × 1080</div>
+          <div class="viewport">
+            <div class="frame thumbnail">
+              <div class="pad-xl">
+                <div class="grid grid-cols-[1.08fr_0.92fr] gap-16 h-full items-center">
+                  <div class="grid gap-10">
+                    <div class="flex flex-wrap gap-4">
+                      <span class="pill pill-dark">Figma variables</span>
+                      <span class="pill">GitHub issues</span>
+                      <span class="pill">One bridge</span>
+                    </div>
+                    <div class="grid gap-8">
+                      <p class="kicker m-0">Design Handoff Bridge</p>
+                      <h1 class="headline m-0">Turn design tokens into developer-ready work.</h1>
+                      <p class="body-copy m-0 max-w-[800px]">
+                        Export variables, open precise token issues, document primitives, and sync results without leaving the handoff flow.
+                      </p>
+                    </div>
+                    <div class="three">
+                      <div class="metric">
+                        <p class="tiny-copy m-0">Token source</p>
+                        <p class="small-copy m-0">Clean variables</p>
+                      </div>
+                      <div class="metric">
+                        <p class="tiny-copy m-0">Issue output</p>
+                        <p class="small-copy m-0">Actionable tasks</p>
+                      </div>
+                      <div class="metric">
+                        <p class="tiny-copy m-0">Result state</p>
+                        <p class="small-copy m-0">Synced proof</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card p-10">
+                    <div class="mock-window">
+                      <div class="window-bar">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="tiny-copy ml-4">handoff-bridge</span>
+                      </div>
+                      <div class="p-8 grid gap-8">
+                        <div class="flow">
+                          <div class="rail">
+                            <div class="rail-step">
+                              <span class="node node-dark">F</span>
+                              <span class="small-copy">Variables</span>
+                            </div>
+                            <div class="rail-step">
+                              <span class="node">T</span>
+                              <span class="small-copy">Tokens</span>
+                            </div>
+                            <div class="rail-step">
+                              <span class="node">P</span>
+                              <span class="small-copy">Primitives</span>
+                            </div>
+                          </div>
+                          <div class="grid gap-6 center">
+                            <div class="bridge-arch w-full"></div>
+                            <div class="bridge-line w-full"></div>
+                            <span class="pill pill-dark">Automated handoff</span>
+                          </div>
+                          <div class="rail">
+                            <div class="issue-card">
+                              <div class="flex items-center gap-4">
+                                <span class="check">#</span>
+                                <p class="small-copy m-0">Token issue</p>
+                              </div>
+                              <div class="bar w-full"></div>
+                              <div class="bar bar-soft w-4/5"></div>
+                              <div class="bar bar-soft w-3/5"></div>
+                            </div>
+                            <div class="terminal">
+                              <p>sync: ready</p>
+                              <p>docs: updated</p>
+                              <p>status: linked</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="asset">
+          <div class="asset-label">Carousel · Export tokens</div>
+          <div class="viewport">
+            <div class="frame carousel">
+              <div class="pad-xl">
+                <div class="split">
+                  <div class="grid content-center gap-8">
+                    <span class="pill pill-dark w-fit">Step 01</span>
+                    <h2 class="carousel-title m-0">Export tokens with developer context.</h2>
+                    <p class="body-copy m-0">
+                      Variables become readable token groups with names, modes, values, and usage notes ready for review.
+                    </p>
+                  </div>
+                  <div class="card p-8 self-center">
+                    <div class="mock-window">
+                      <div class="window-bar">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="tiny-copy ml-4">token-export.json</span>
+                      </div>
+                      <div class="p-6">
+                        <div class="code-row">
+                          <span class="tiny-copy">color.bg</span>
+                          <span class="bar w-full"></span>
+                          <span class="tiny-copy">light</span>
+                        </div>
+                        <div class="code-row">
+                          <span class="tiny-copy">space.24</span>
+                          <span class="bar bar-soft w-4/5"></span>
+                          <span class="tiny-copy">grid</span>
+                        </div>
+                        <div class="code-row">
+                          <span class="tiny-copy">radius.16</span>
+                          <span class="bar w-3/5"></span>
+                          <span class="tiny-copy">card</span>
+                        </div>
+                        <div class="code-row">
+                          <span class="tiny-copy">font.body</span>
+                          <span class="bar bar-soft w-full"></span>
+                          <span class="tiny-copy">text</span>
+                        </div>
+                        <div class="code-row">
+                          <span class="tiny-copy">shadow.01</span>
+                          <span class="bar w-2/3"></span>
+                          <span class="tiny-copy">depth</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="asset">
+          <div class="asset-label">Carousel · Create token issue</div>
+          <div class="viewport">
+            <div class="frame carousel">
+              <div class="pad-xl">
+                <div class="split">
+                  <div class="card p-8 self-center">
+                    <div class="grid gap-6">
+                      <div class="issue-card">
+                        <div class="flex items-center justify-between gap-4">
+                          <span class="pill pill-dark">GitHub</span>
+                          <span class="pill">Issue #128</span>
+                        </div>
+                        <h3 class="body-copy m-0">Create token implementation task</h3>
+                        <div class="two">
+                          <div class="soft-card p-6">
+                            <p class="tiny-copy m-0">Scope</p>
+                            <p class="small-copy m-0 mt-2">primitive tokens</p>
+                          </div>
+                          <div class="soft-card p-6">
+                            <p class="tiny-copy m-0">Owner</p>
+                            <p class="small-copy m-0 mt-2">frontend</p>
+                          </div>
+                        </div>
+                        <div class="bar w-full"></div>
+                        <div class="bar bar-soft w-5/6"></div>
+                        <div class="bar bar-soft w-2/3"></div>
+                      </div>
+                      <div class="terminal">
+                        <p>labels: tokens, design-system</p>
+                        <p>checklist: generated</p>
+                        <p>source: figma variables</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid content-center gap-8">
+                    <span class="pill pill-dark w-fit">Step 02</span>
+                    <h2 class="carousel-title m-0">Open issues that engineers can act on.</h2>
+                    <p class="body-copy m-0">
+                      Each issue carries the token delta, checklist, source collection, and expected implementation notes.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="asset">
+          <div class="asset-label">Carousel · Primitive handoff</div>
+          <div class="viewport">
+            <div class="frame carousel">
+              <div class="pad-xl">
+                <div class="grid h-full grid-cols-[0.9fr_1.1fr] gap-12 items-center">
+                  <div class="grid gap-8">
+                    <span class="pill pill-dark w-fit">Step 03</span>
+                    <h2 class="carousel-title m-0">Package primitives with their intent.</h2>
+                    <p class="body-copy m-0">
+                      Handoff cards describe what changed, where tokens live, and how primitives map into product UI.
+                    </p>
+                  </div>
+                  <div class="grid gap-6">
+                    <div class="three">
+                      <div class="dark-card p-8">
+                        <p class="tiny-copy m-0">Primitive</p>
+                        <h3 class="body-copy m-0 mt-4">Button</h3>
+                        <p class="small-copy m-0 mt-4">size · state · radius</p>
+                      </div>
+                      <div class="soft-card p-8">
+                        <p class="tiny-copy m-0">Primitive</p>
+                        <h3 class="body-copy m-0 mt-4">Input</h3>
+                        <p class="small-copy m-0 mt-4">field · label · focus</p>
+                      </div>
+                      <div class="soft-card p-8">
+                        <p class="tiny-copy m-0">Primitive</p>
+                        <h3 class="body-copy m-0 mt-4">Card</h3>
+                        <p class="small-copy m-0 mt-4">surface · shadow · gap</p>
+                      </div>
+                    </div>
+                    <div class="card p-8">
+                      <div class="grid grid-cols-[160px_1fr_160px] gap-8 items-center">
+                        <div class="grid gap-4">
+                          <span class="node node-dark">F</span>
+                          <span class="node">V</span>
+                        </div>
+                        <div class="grid gap-6">
+                          <div class="bridge-arch w-full"></div>
+                          <div class="bridge-line w-full"></div>
+                        </div>
+                        <div class="mini-document">
+                          <div class="document-line w-full"></div>
+                          <div class="document-line w-5/6"></div>
+                          <div class="document-line w-3/5"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="asset">
+          <div class="asset-label">Carousel · GitHub settings</div>
+          <div class="viewport">
+            <div class="frame carousel">
+              <div class="pad-xl">
+                <div class="split">
+                  <div class="grid content-center gap-8">
+                    <span class="pill pill-dark w-fit">Step 04</span>
+                    <h2 class="carousel-title m-0">Connect repository settings once.</h2>
+                    <p class="body-copy m-0">
+                      Configure owner, repository, labels, assignees, and issue templates for repeatable handoff output.
+                    </p>
+                  </div>
+                  <div class="card p-8 self-center">
+                    <div class="mock-window">
+                      <div class="window-bar">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="tiny-copy ml-4">GitHub settings</span>
+                      </div>
+                      <div class="p-8 grid gap-6">
+                        <div class="soft-card p-6">
+                          <p class="tiny-copy m-0">Repository</p>
+                          <div class="bar w-full mt-4"></div>
+                        </div>
+                        <div class="soft-card p-6">
+                          <p class="tiny-copy m-0">Labels</p>
+                          <div class="flex flex-wrap gap-4 mt-4">
+                            <span class="pill">tokens</span>
+                            <span class="pill">ui-system</span>
+                            <span class="pill">handoff</span>
+                          </div>
+                        </div>
+                        <div class="two">
+                          <div class="soft-card p-6">
+                            <p class="tiny-copy m-0">Assignee</p>
+                            <div class="bar bar-soft w-4/5 mt-4"></div>
+                          </div>
+                          <div class="soft-card p-6">
+                            <p class="tiny-copy m-0">Template</p>
+                            <div class="bar bar-soft w-3/4 mt-4"></div>
+                          </div>
+                        </div>
+                        <button class="pill pill-dark justify-self-start">Save bridge settings</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="asset">
+          <div class="asset-label">Carousel · Synced result</div>
+          <div class="viewport">
+            <div class="frame carousel">
+              <div class="pad-xl">
+                <div class="grid h-full grid-cols-[1.1fr_0.9fr] gap-12 items-center">
+                  <div class="card p-8">
+                    <div class="grid gap-8">
+                      <div class="flex items-center justify-between gap-6">
+                        <div>
+                          <p class="kicker m-0">Synced result</p>
+                          <h2 class="carousel-title m-0 mt-4">Design and code now share the same source.</h2>
+                        </div>
+                        <span class="check">✓</span>
+                      </div>
+                      <div class="three">
+                        <div class="metric">
+                          <p class="tiny-copy m-0">Tokens</p>
+                          <p class="body-copy m-0">42</p>
+                        </div>
+                        <div class="metric">
+                          <p class="tiny-copy m-0">Issues</p>
+                          <p class="body-copy m-0">5</p>
+                        </div>
+                        <div class="metric">
+                          <p class="tiny-copy m-0">Docs</p>
+                          <p class="body-copy m-0">1</p>
+                        </div>
+                      </div>
+                      <div class="terminal">
+                        <p>export complete</p>
+                        <p>issue links attached</p>
+                        <p>handoff package synced</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid gap-8 content-center">
+                    <span class="pill pill-dark w-fit">Step 05</span>
+                    <p class="body-copy m-0">
+                      The final state gives designers confirmation and developers a precise implementation trail.
+                    </p>
+                    <div class="rail">
+                      <div class="rail-step">
+                        <span class="check">✓</span>
+                        <span class="small-copy">Variables exported</span>
+                      </div>
+                      <div class="rail-step">
+                        <span class="check">✓</span>
+                        <span class="small-copy">Issues linked</span>
+                      </div>
+                      <div class="rail-step">
+                        <span class="check">✓</span>
+                        <span class="small-copy">Primitives documented</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

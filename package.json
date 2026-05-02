@@ -24,6 +24,7 @@
     "build:plugin": "node scripts/build-plugin.mjs",
     "build": "npm run build:plugin",
     "dev": "node --watch-path=src --watch-path=manifest.json scripts/build-plugin.mjs",
+    "release:community": "node scripts/figma-community-release.mjs",
     "format": "biome format --write .",
     "lint": "biome lint .",
     "check": "biome check .",

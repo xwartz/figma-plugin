@@ -75,7 +75,7 @@ Build output is written to `dist/figma-plugin/`, with a zip artifact at `dist/fi
 
 ## Release
 
-For Figma Community submission steps, listing copy, and asset prep, see [docs/figma-community-release.md](docs/figma-community-release.md).
+For Figma Community submission steps, listing copy, and asset prep, see [docs/community-release/README.md](docs/community-release/README.md). Upload-ready listing assets live in [docs/community-release/assets](docs/community-release/assets).
 
 For support, open an issue in this repository.
 

@@ -7,3 +7,6 @@ out/
 
 # webstorm
 .idea
+
+# Figma Community release intermediates
+docs/community-release/render/
