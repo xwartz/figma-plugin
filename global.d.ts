@@ -81,6 +81,16 @@ type PluginStateI = {
   variableCollections: string[];
 };
 
+type SerializablePrimitive = string | number | boolean | null | undefined;
+type SerializableValue =
+  | SerializablePrimitive
+  | SerializableObject
+  | SerializableValue[];
+
+interface SerializableObject {
+  [key: string]: SerializableValue;
+}
+
 type JSONSettingsConfigI = ExportSettingsI &
   PluginStateI & {
     servers: ServerSettingsI;

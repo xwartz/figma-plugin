@@ -4,6 +4,12 @@ import { getAliasVariableName } from '@common/transform/getAliasVariableName'
 import { getTokenKeyName } from '@common/transform/getTokenKeyName'
 import { groupObjectNamesIntoCategories } from '@common/transform/groupObjectNamesIntoCategories'
 
+interface GradientColorStop extends ColorStop {
+  readonly boundVariables?: {
+    readonly color?: VariableAlias
+  }
+}
+
 const convertGradientStopsToDTCG = async (
   gradientStops: ReadonlyArray<ColorStop>,
   colorMode: colorModeType,
@@ -11,14 +17,14 @@ const convertGradientStopsToDTCG = async (
   includeValueStringKeyToAlias: boolean,
   resolver: IResolver,
 ) => {
-  const stops: { color: string | undefined; position: number }[] = []
+  const stops: Array<{ color: SerializableValue; position: number }> = []
 
   for (let i = 0; i < gradientStops.length; i++) {
-    const stop = gradientStops[i]
-    let colorValue
+    const stop = gradientStops[i] as GradientColorStop
+    let colorValue: SerializableValue
 
     // Each gradient stop can have its own bound variable for the color
-    const stopBoundVariable = (stop as any).boundVariables?.color
+    const stopBoundVariable = stop.boundVariables?.color
 
     if (stopBoundVariable?.id) {
       colorValue = await getAliasVariableName(
@@ -26,10 +32,6 @@ const convertGradientStopsToDTCG = async (
         isDTCGFormat,
         includeValueStringKeyToAlias,
         resolver,
-      )
-      console.log(
-        `Stop ${i} (position ${stop.position}): Variable ID ${stopBoundVariable.id} resolved to:`,
-        colorValue,
       )
     } else {
       const colorWithOpacity = {
@@ -39,10 +41,6 @@ const convertGradientStopsToDTCG = async (
         a: stop.color.a,
       }
       colorValue = convertRGBA(colorWithOpacity, colorMode)
-      console.log(
-        `Stop ${i} (position ${stop.position}): No bound variable, using direct color:`,
-        colorValue,
-      )
     }
 
     stops.push({
@@ -64,11 +62,8 @@ export const colorStylesToTokens = async (
   const keyNames = getTokenKeyName(isDTCGForamt)
   const paintStyles = await resolver.getLocalPaintStyles()
 
-  const colorTokens = {}
-
-  const allColorStyles = {}
-
-  console.log('paintStyles', paintStyles)
+  const colorTokens: SerializableObject = {}
+  const allColorStyles: SerializableObject = {}
 
   for (const style of paintStyles) {
     const styleName = style.name
@@ -76,7 +71,7 @@ export const colorStylesToTokens = async (
 
     if (paints.length === 0) continue
 
-    const boundVariables = (style as any).boundVariables
+    const boundVariables = (style as PaintStyleExtended).boundVariables
 
     // Handle solid color paints
     if (paints.length === 1 && paints[0].type === 'SOLID') {

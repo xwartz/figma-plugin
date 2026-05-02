@@ -1,8 +1,7 @@
 .codePreview {
-  overflow: hidden;
   position: relative;
   flex: 1;
-  overflow: auto;
+  overflow-x: auto;
   height: 100vh;
   background-color: var(--figma-color-bg-secondary);
   border-left: 1px solid var(--figma-color-border);

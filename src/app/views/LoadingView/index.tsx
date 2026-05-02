@@ -11,6 +11,7 @@ export const LoadingView = () => {
         fill="var(--figma-color-icon)"
         className={styles.spinner}
       >
+        <title>Loading</title>
         <path
           fillRule="evenodd"
           clipRule="evenodd"

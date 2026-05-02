@@ -4,7 +4,7 @@ import { convertRGBA } from './color/convertRGBA'
 import { getAliasVariableName } from './getAliasVariableName'
 
 interface PropsI {
-  variableValue: any
+  variableValue: VariableValue
   variableType: VariableResolvedDataType
   variableScope: VariableScope[]
   colorMode: colorModeType
@@ -26,11 +26,12 @@ export const normalizeValue = async (props: PropsI, resolver: IResolver) => {
     omitCollectionNames = false,
   } = props
 
-  // console.log("variableValue", variableValue);
-
-  if (variableValue?.type === 'VARIABLE_ALIAS') {
-    // console.log("VARIABLE_ALIAS", variableValue);
-
+  if (
+    typeof variableValue === 'object' &&
+    variableValue !== null &&
+    'type' in variableValue &&
+    variableValue.type === 'VARIABLE_ALIAS'
+  ) {
     const aliasVariableName = await getAliasVariableName(
       variableValue.id,
       useDTCGKeys,
@@ -43,20 +44,22 @@ export const normalizeValue = async (props: PropsI, resolver: IResolver) => {
   }
 
   if (variableType === 'COLOR') {
-    return convertRGBA(variableValue, colorMode)
+    return convertRGBA(variableValue as RGBA, colorMode)
   }
 
   if (variableType === 'FLOAT') {
+    const numericValue = Number(variableValue)
+
     if (variableScope.length === 1 && variableScope[0] === 'FONT_WEIGHT') {
       return `${variableValue}`
     } else if (variableScope.length === 1 && variableScope[0] === 'OPACITY') {
       if (usePercentageOpacity) {
-        return `${variableValue}%`
+        return `${numericValue}%`
       } else {
-        return Number(variableValue) / 100
+        return numericValue / 100
       }
     } else {
-      return `${new Decimal(variableValue).toDecimalPlaces(6).toNumber()}px`
+      return `${new Decimal(numericValue).toDecimalPlaces(6).toNumber()}px`
     }
   }
 

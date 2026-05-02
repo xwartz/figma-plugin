@@ -1,5 +1,11 @@
-export const removeDollarSign = (obj: any) => {
-  if (typeof obj !== 'object' || obj === null) {
+const isSerializableObject = (
+  value: SerializableValue,
+): value is SerializableObject => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+export const removeDollarSign = (obj: SerializableValue): SerializableValue => {
+  if (!isSerializableObject(obj) && !Array.isArray(obj)) {
     return obj
   }
 
@@ -7,7 +13,7 @@ export const removeDollarSign = (obj: any) => {
     return obj.map(removeDollarSign)
   }
 
-  const result = {}
+  const result: SerializableObject = {}
 
   for (const key in obj) {
     if (Object.hasOwn(obj, key)) {

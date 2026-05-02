@@ -1,5 +1,4 @@
-export const checkForVariables = async (msgType) => {
-  // get and set collections
+export const checkForVariables = async (msgType: string) => {
   if (msgType === 'checkForVariables') {
     const variables =
       (await figma.variables.getLocalVariablesAsync()) as Variable[]
@@ -8,9 +7,6 @@ export const checkForVariables = async (msgType) => {
     const collectionNames = variableCollections.map((collection) => {
       return collection.name
     })
-
-    console.log('available variables', variables.length)
-    console.log('available variable collections', variableCollections.length)
 
     figma.ui.postMessage({
       type: 'checkForVariables',

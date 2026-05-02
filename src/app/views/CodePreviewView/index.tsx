@@ -4,7 +4,7 @@ import { Icon, Text } from 'react-figma-ui/ui'
 import styles from './styles.module.css'
 
 interface CodePreviewViewProps {
-  generatedTokens: any
+  generatedTokens: SerializableObject
 }
 
 const copy = require('clipboard-copy')
@@ -12,7 +12,9 @@ const copy = require('clipboard-copy')
 export const CodePreviewView = ({ generatedTokens }: CodePreviewViewProps) => {
   const [isUpdateButtonAnimated, setIsUpdateButtonAnimated] =
     React.useState<boolean>(false)
-  const [tokensStat, setTokensStat] = React.useState<any>(null)
+  const [tokensStat, setTokensStat] = React.useState<ReturnType<
+    typeof getTokensStat
+  > | null>(null)
   const [isCodeCopied, setIsCodeCopied] = React.useState<boolean>(false)
 
   const getTokensPreview = () => {
@@ -61,6 +63,7 @@ export const CodePreviewView = ({ generatedTokens }: CodePreviewViewProps) => {
     <section className={styles.codePreview}>
       <section className={styles.previewToolbar}>
         <button
+          type="button"
           className={`${styles.toolbarItem} ${styles.previewToolbarButton} ${
             isUpdateButtonAnimated ? styles.successUpdateAnimation : ''
           }`}
@@ -71,6 +74,7 @@ export const CodePreviewView = ({ generatedTokens }: CodePreviewViewProps) => {
         </button>
 
         <button
+          type="button"
           className={`${styles.toolbarItem} ${styles.previewToolbarSecondButton}`}
           onClick={copyCode}
         >

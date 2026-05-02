@@ -6,6 +6,7 @@ interface StatusPictureProps {
 
 const errorSVG = (
   <svg viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <title>Error status</title>
     <path
       d="M39.9993 2L63.9986 15.856V43.568L39.9993 57.424L16 43.568V15.856L39.9993 2Z"
       stroke="var(--figma-color-border-danger-strong)"
@@ -19,6 +20,7 @@ const errorSVG = (
 
 const tokensSVG = (
   <svg viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <title>Tokens status</title>
     <path
       d="M39.9993 2L63.9986 15.856V43.568L39.9993 57.424L16 43.568V15.856L39.9993 2Z"
       stroke="#A3A3A3"
@@ -29,6 +31,7 @@ const tokensSVG = (
 
 const importSVG = (
   <svg viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <title>Import status</title>
     <path
       d="M16 22.784V15.856L39.9993 2L63.9986 15.856V43.568L39.9993 57.424L16 43.568V36.64"
       stroke="#A3A3A3"

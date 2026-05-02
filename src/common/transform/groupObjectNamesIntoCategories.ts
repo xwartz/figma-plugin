@@ -1,32 +1,37 @@
-export const groupObjectNamesIntoCategories = (inputObject: any) => {
-  const result = {}
+const isSerializableObject = (
+  value: SerializableValue,
+): value is SerializableObject => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
 
-  for (const key in inputObject) {
+export const groupObjectNamesIntoCategories = (
+  inputObject: SerializableObject,
+) => {
+  const result: SerializableObject = {}
+
+  for (const [key, value] of Object.entries(inputObject)) {
     const parts = key.split('/')
     let current = result
 
-    for (let i = 0; i < parts.length; i++) {
-      const part = parts[i]
+    for (let index = 0; index < parts.length; index++) {
+      const part = parts[index]
 
-      if (i === parts.length - 1) {
-        // Check if the value is an array, if so, assign the whole array as is
-        if (Array.isArray(inputObject[key])) {
-          current[part] = inputObject[key]
-        } else {
-          current[part] = inputObject[key]
-        }
-      } else {
-        if (!current[part]) {
-          current[part] = {}
-        }
-        current = current[part]
+      if (index === parts.length - 1) {
+        current[part] = value
+        continue
       }
+
+      if (!isSerializableObject(current[part])) {
+        current[part] = {}
+      }
+
+      current = current[part] as SerializableObject
     }
   }
 
-  for (const prop in result) {
-    if (typeof result[prop] === 'object' && !Array.isArray(result[prop])) {
-      result[prop] = groupObjectNamesIntoCategories(result[prop])
+  for (const [prop, value] of Object.entries(result)) {
+    if (isSerializableObject(value)) {
+      result[prop] = groupObjectNamesIntoCategories(value)
     }
   }
 

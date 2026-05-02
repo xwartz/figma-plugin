@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 
-import { useDidUpdate } from './hooks/useDidUpdate'
 import styles from './styles.module.css'
 import { CodePreviewView } from './views/CodePreviewView'
 import { EmptyView } from './views/EmptyView'
@@ -55,8 +54,11 @@ const getDefaultSettingsConfig = (): JSONSettingsConfigI => ({
 
 const Container = () => {
   const wrapperRef = React.useRef<HTMLDivElement | null>(null)
+  const hasSyncedSettingsRef = React.useRef(false)
+  const hasSyncedPreviewRef = React.useRef(false)
+  const previewHeightRef = React.useRef(0)
 
-  const [generatedTokens, setGeneratedTokens] = useState({})
+  const [generatedTokens, setGeneratedTokens] = useState<SerializableObject>({})
 
   const [isLoading, setIsLoading] = useState(true)
 
@@ -218,8 +220,16 @@ const Container = () => {
     }
   }, [manualFrameHeight, contentHeight])
 
-  // pass changed to figma controller
-  useDidUpdate(() => {
+  useEffect(() => {
+    previewHeightRef.current = manualFrameHeight ?? frameHeight
+  }, [manualFrameHeight, frameHeight])
+
+  useEffect(() => {
+    if (!hasSyncedSettingsRef.current) {
+      hasSyncedSettingsRef.current = true
+      return
+    }
+
     parent.postMessage(
       {
         pluginMessage: {
@@ -231,14 +241,18 @@ const Container = () => {
     )
   }, [JSONsettingsConfig])
 
-  // handle code preview
-  useDidUpdate(() => {
+  useEffect(() => {
+    if (!hasSyncedPreviewRef.current) {
+      hasSyncedPreviewRef.current = true
+      return
+    }
+
     parent.postMessage(
       {
         pluginMessage: {
           type: 'openCodePreview',
           isCodePreviewOpen,
-          height: manualFrameHeight ?? frameHeight,
+          height: previewHeightRef.current,
         },
       },
       '*',

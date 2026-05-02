@@ -7,6 +7,13 @@ type rgbaType = {
   a: number
 }
 
+type hslaType = {
+  h: number
+  s: number
+  l: number
+  a: number
+}
+
 const rgbaToHexA = (rgba: rgbaType) => {
   const { r, g, b, a } = rgba
 
@@ -44,7 +51,7 @@ const rgbaToCss = (rgba: rgbaType) => {
   return `rgba(${r}, ${g}, ${b}, ${a})`
 }
 
-const rgbaToHsla = (rgba: rgbaType) => {
+const rgbaToHsla = (rgba: rgbaType): hslaType => {
   const { r, g, b, a } = rgba
   const normalizedR = r / 255
   const normalizedG = g / 255
@@ -80,7 +87,7 @@ const rgbaToHsla = (rgba: rgbaType) => {
   return hsla
 }
 
-const hslaToCss = (hsla: any) => {
+const hslaToCss = (hsla: hslaType) => {
   const { h, s, l, a } = hsla
   return `hsla(${h}, ${s}%, ${l}%, ${a})`
 }

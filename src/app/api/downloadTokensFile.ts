@@ -15,7 +15,7 @@ const triggerDownload = (blob: Blob, fileName: string) => {
 }
 
 export const downloadTokensFile = async (
-  objectToSave: Record<string, any>,
+  objectToSave: SerializableObject,
   splitByCollection = false,
 ) => {
   if (splitByCollection) {

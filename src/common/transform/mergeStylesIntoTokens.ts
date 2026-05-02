@@ -1,21 +1,29 @@
+const isSerializableObject = (
+  value: SerializableValue,
+): value is SerializableObject => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
 export const mergeStylesIntoTokens = (
-  variableTokens: any,
-  styleTokens: any,
+  variableTokens: SerializableObject,
+  styleTokens: SerializableObject[],
   storeStyleInCollection: string,
 ) => {
-  if (!storeStyleInCollection || storeStyleInCollection === 'none') {
-    // Object.assign(variableTokens, styleTokens);
-    styleTokens.forEach((styleToken) => {
-      Object.assign(variableTokens, styleToken)
-    })
-  } else {
-    // Object.assign(variableTokens[storeStyleInCollection], styleTokens);
-    styleTokens.forEach((styleToken) => {
-      Object.assign(variableTokens[storeStyleInCollection], styleToken)
-    })
+  let target = variableTokens
+
+  if (storeStyleInCollection && storeStyleInCollection !== 'none') {
+    const collectionTokens = variableTokens[storeStyleInCollection]
+
+    if (!isSerializableObject(collectionTokens)) {
+      variableTokens[storeStyleInCollection] = {}
+    }
+
+    target = variableTokens[storeStyleInCollection] as SerializableObject
   }
 
-  // console.log("variableTokens", variableTokens);
+  styleTokens.forEach((styleToken) => {
+    Object.assign(target, styleToken)
+  })
 
   return variableTokens
 }

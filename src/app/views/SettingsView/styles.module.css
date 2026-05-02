@@ -209,9 +209,12 @@
 }
 
 .heightResizer {
+  appearance: none;
   width: 15%;
   margin: 0 auto 8px;
   height: 4px;
+  padding: 0;
+  border: none;
   border-radius: 4px;
   background-color: var(--figma-color-border);
   cursor: ns-resize;

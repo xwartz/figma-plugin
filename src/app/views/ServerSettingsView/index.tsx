@@ -168,17 +168,16 @@ function mergeTemplateDefaults({
   figmaContext?: FigmaSelectionContextI
 }) {
   const autoValues = getAutoFieldValues(figmaContext)
+  const mergedFields = { ...currentFields }
 
-  return (template?.fields ?? []).reduce(
-    (acc, field) => ({
-      ...acc,
-      [field.id]:
-        autoValues[field.id] ||
-        currentFields[field.id] ||
-        getFieldDefaultValue(field),
-    }),
-    currentFields,
-  )
+  for (const field of template?.fields ?? []) {
+    mergedFields[field.id] =
+      autoValues[field.id] ||
+      currentFields[field.id] ||
+      getFieldDefaultValue(field)
+  }
+
+  return mergedFields
 }
 
 function getPreferredTemplateFile({
@@ -489,11 +488,11 @@ export const ServerSettingsView = (props: ViewProps) => {
     }
 
     return (
-      <label key={field.id} className={styles.field}>
-        <span className={styles.label}>
+      <div key={field.id} className={styles.field}>
+        <label className={styles.label} htmlFor={field.id}>
           {field.label}
           {field.required && <span className={styles.required}> *</span>}
-        </span>
+        </label>
         {field.inputType === 'password' ? (
           <input
             id={field.id}
@@ -518,7 +517,7 @@ export const ServerSettingsView = (props: ViewProps) => {
             onFocus={handleFocus}
           />
         )}
-      </label>
+      </div>
     )
   }
 
@@ -529,11 +528,11 @@ export const ServerSettingsView = (props: ViewProps) => {
 
     if (field.type === 'select') {
       return (
-        <label key={field.id} className={styles.field}>
-          <span className={styles.label}>
+        <div key={field.id} className={styles.field}>
+          <label className={styles.label} htmlFor={field.id}>
             {field.label}
             {field.required && <span className={styles.required}> *</span>}
-          </span>
+          </label>
           <NativeDropdown
             id={field.id}
             value={value}
@@ -543,17 +542,17 @@ export const ServerSettingsView = (props: ViewProps) => {
             }))}
             onChange={(nextValue) => updateIssueField(field.id, nextValue)}
           />
-        </label>
+        </div>
       )
     }
 
     if (field.type === 'textarea') {
       return (
-        <label key={field.id} className={styles.field}>
-          <span className={styles.label}>
+        <div key={field.id} className={styles.field}>
+          <label className={styles.label} htmlFor={field.id}>
             {field.label}
             {field.required && <span className={styles.required}> *</span>}
-          </span>
+          </label>
           <textarea
             id={field.id}
             className={`${styles.textarea} ${isInvalid ? styles.invalid : ''}`}
@@ -570,7 +569,7 @@ export const ServerSettingsView = (props: ViewProps) => {
             }}
             rows={field.id === 'acceptance_criteria' ? 5 : 3}
           />
-        </label>
+        </div>
       )
     }
 

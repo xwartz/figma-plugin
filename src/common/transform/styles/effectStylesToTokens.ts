@@ -25,7 +25,6 @@ const wrapShadowObject = async (
     return null
   }
 
-  // console.log("shadowEffect", shadowEffect);
   return {
     inset: shadowEffect.type === 'INNER_SHADOW',
     color:
@@ -97,8 +96,6 @@ export const effectStylesToTokens = async (
       allEffectStyles[styleName] = styleObject
     }
   }
-
-  // console.log("allEffectStyles", allEffectStyles);
 
   effectTokens[customName] = groupObjectNamesIntoCategories(allEffectStyles)
 

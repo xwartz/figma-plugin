@@ -10,8 +10,6 @@ export const gridStylesToTokens = async (
   const keyNames = getTokenKeyName(isDTCGForamt)
   const gridStyles = await resolver.getLocalGridStyles()
 
-  // console.log("gridStyles", gridStyles);
-
   const textTokens = {}
 
   const allGridStyles = gridStyles.reduce((result, style) => {
@@ -47,9 +45,6 @@ export const gridStylesToTokens = async (
 
     return result
   }, {})
-
-  // console.log("allTextStyles", allTextStyles);
-
   textTokens[customName] = groupObjectNamesIntoCategories(allGridStyles)
 
   return textTokens

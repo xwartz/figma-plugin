@@ -1,16 +1,22 @@
 import { countTokens } from './countTokens'
 
-export const getTokensStat = (tokens) => {
+const isSerializableObject = (
+  value: SerializableValue,
+): value is SerializableObject => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+export const getTokensStat = (tokens: SerializableObject) => {
   // get lines count
   const codeLines = JSON.stringify(tokens, null, 2).split('\n').length
 
-  console.log('codeLines', codeLines)
   // get groups count
-  const groupsCount = Object.keys(tokens).reduce((acc, key) => {
-    const group = tokens[key]
-    const groupKeys = Object.keys(group)
+  const groupsCount = Object.values(tokens).reduce((acc, group) => {
+    if (!isSerializableObject(group)) {
+      return acc
+    }
 
-    return acc + groupKeys.length
+    return acc + Object.keys(group).length
   }, 0)
 
   const tokensCount = countTokens(tokens)

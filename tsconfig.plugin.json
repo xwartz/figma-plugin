@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "dist/plugin/dts",
     "sourceMap": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "lib": ["dom", "es2021"], // Extends lib from base
     "declaration": false,
     "emitDeclarationOnly": false

@@ -4,8 +4,6 @@ import { groupObjectNamesIntoCategories } from './groupObjectNamesIntoCategories
 import { normalizeValue } from './normalizeValue'
 import { normilizeType } from './normilizeType'
 
-// console.clear();
-
 export const variablesToTokens = async (
   variables: Variable[],
   collections: VariableCollection[],
@@ -22,38 +20,37 @@ export const variablesToTokens = async (
   } = config
   const keyNames = getTokenKeyName(useDTCGKeys)
 
-  // let mergedVariables = {};
-  let emptyCollection = collections.map((collection) => {
-    return {
-      [collection.name]: {},
-    }
-  })
+  let emptyCollection: Array<Record<string, SerializableObject>> =
+    collections.map((collection) => {
+      return {
+        [collection.name]: {},
+      }
+    })
 
   // When omitting collection names, use a single flat object for all variables
-  const flatVariables: Record<string, any> = {}
+  const flatVariables: SerializableObject = {}
   const seenVariableNames = new Set<string>()
 
-  // console.log("variables", variables);
-  // console.log("collections", collections);
-
   for (const variable of variables) {
-    // console.log("variable", variable);
-    // get collection object
     const collectionId = variable.variableCollectionId
-    const collectionName = collections.find(
+    const collectionEntry = collections.find(
       (collection) => collection.id === collectionId,
-    ).name
-    const collectionDefaultModeId = collections.find(
-      (collection) => collection.id === collectionId,
-    ).defaultModeId
+    )
+
+    if (!collectionEntry) {
+      console.warn(
+        `[design-handoff-bridge] Skipping variable "${variable.name}" because collection ${collectionId} was not found.`,
+      )
+      continue
+    }
+
+    const collectionName = collectionEntry.name
+    const collectionDefaultModeId = collectionEntry.defaultModeId
     const collectionObject = {
       id: collectionId,
       name: collectionName,
       defaultModeId: collectionDefaultModeId,
     }
-
-    // console.log("collectionObject", collectionObj
-    // console.log("collection", collectionObject);
 
     // get values by mode
     const modes = variable.valuesByMode
@@ -77,15 +74,13 @@ export const variablesToTokens = async (
       Object.keys(modes).indexOf(collectionDefaultModeId),
     )
 
-    // console.log("defaultValue", defaultValue);
-
     const modesValues = Object.fromEntries(
       (
         await Promise.all(
           Object.keys(modes).map(async (modeId, index) => {
-            const modeName = collections
-              .find((collection) => collection.id === collectionId)
-              .modes.find((mode) => mode.modeId === modeId)?.name
+            const modeName = collectionEntry.modes.find(
+              (mode) => mode.modeId === modeId,
+            )?.name
 
             if (modeName) {
               return [[modeName, await getValue(index)]]
@@ -95,7 +90,7 @@ export const variablesToTokens = async (
           }),
         )
       ).flat(),
-    )
+    ) as Record<string, SerializableValue>
 
     const filteredModesValues =
       Object.keys(modesValues).length === 1 ? {} : modesValues
@@ -149,14 +144,10 @@ export const variablesToTokens = async (
     return groupObjectNamesIntoCategories(flatVariables)
   }
 
-  // console.log("emptyCollection", emptyCollection);
-
-  const mergedVariables = emptyCollection.reduce((result, collection) => {
-    return {
-      ...result,
-      ...collection,
-    }
-  }, {})
+  const mergedVariables: SerializableObject = {}
+  emptyCollection.forEach((collection) => {
+    Object.assign(mergedVariables, collection)
+  })
 
   return groupObjectNamesIntoCategories(mergedVariables)
 }

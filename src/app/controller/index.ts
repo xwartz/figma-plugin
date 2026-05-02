@@ -1,18 +1,13 @@
 import { checkForVariables } from './checkForVariables'
 import { getStorageConfig } from './getStorageConfig'
 
-// import { removeDollarSign } from "../utils/removeDollarSign";
-
 import { PluginAPIResolver } from '@app/api/pluginApiResolver'
 import { getTokens } from '@common/export'
 import { config } from './config'
 
-// clear console on reload
-console.clear()
-
 const pluginConfigKey = 'design-handoff-bridge-config'
 getStorageConfig(pluginConfigKey)
-//
+
 let isCodePreviewOpen = false
 
 const frameWidthWithCodePreview = 800
@@ -90,12 +85,8 @@ figma.ui.onmessage = async (msg) => {
 
   // get JSON settings config from UI and store it in a variable
   if (msg.type === 'JSONSettingsConfig') {
-    // update JSONSettingsConfig
     JSONSettingsConfig = msg.config
 
-    // console.log("updated JSONSettingsConfig received", JSONSettingsConfig);
-
-    // handle client storage
     await figma.clientStorage.setAsync(
       pluginConfigKey,
       JSON.stringify(JSONSettingsConfig),

@@ -9,10 +9,46 @@ interface ImportResult {
   errors: string[]
 }
 
+interface TokenExtensions {
+  mode?: Record<string, SerializableValue>
+}
+
+interface TokenData extends SerializableObject {
+  $value?: SerializableValue
+  value?: SerializableValue
+  $type?: string
+  type?: string
+  $description?: string
+  description?: string
+  scopes?: string[]
+  $extensions?: TokenExtensions
+  extensions?: TokenExtensions
+}
+
+interface TokenEntry {
+  path: string
+  token: TokenData
+  collectionName: string
+}
+
+interface ModeTokenValue {
+  value: SerializableValue
+  type: string | null
+  description: string
+}
+
+const isSerializableObject = (value: unknown): value is SerializableObject => {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+const getErrorMessage = (error: unknown) => {
+  return error instanceof Error ? error.message : String(error)
+}
+
 /**
  * Parses DTCG or standard token format to extract the value
  */
-const getTokenValue = (token: any): any => {
+const getTokenValue = (token: TokenData): SerializableValue | null => {
   // DTCG format uses $value
   if (token.$value !== undefined) {
     return token.$value
@@ -27,7 +63,7 @@ const getTokenValue = (token: any): any => {
 /**
  * Parses DTCG or standard token format to extract the type
  */
-const getTokenType = (token: any): string | null => {
+const getTokenType = (token: TokenData): string | null => {
   // DTCG format uses $type
   if (token.$type !== undefined) {
     return token.$type
@@ -42,7 +78,7 @@ const getTokenType = (token: any): string | null => {
 /**
  * Parses DTCG or standard token format to extract the description
  */
-const getTokenDescription = (token: any): string => {
+const getTokenDescription = (token: TokenData): string => {
   // DTCG format uses $description
   if (token.$description !== undefined) {
     return token.$description
@@ -79,14 +115,16 @@ const VALID_VARIABLE_SCOPES: ReadonlyArray<VariableScope> = [
   'PARAGRAPH_INDENT',
 ]
 
-export const isValidVariableScope = (scope: any): scope is VariableScope => {
+export const isValidVariableScope = (
+  scope: unknown,
+): scope is VariableScope => {
   return VALID_VARIABLE_SCOPES.includes(scope)
 }
 
 /**
  * Parses a token to extract scopes (standard format only: `scopes` key).
  */
-export const getTokenScopes = (token: any): string[] | undefined => {
+export const getTokenScopes = (token: TokenData): string[] | undefined => {
   if (token.scopes !== undefined && Array.isArray(token.scopes)) {
     return token.scopes
   }
@@ -96,12 +134,14 @@ export const getTokenScopes = (token: any): string[] | undefined => {
 /**
  * Checks if an object is a token (has value and type)
  */
-const isToken = (obj: any): boolean => {
-  if (typeof obj !== 'object' || obj === null) {
+const isToken = (obj: unknown): obj is TokenData => {
+  if (!isSerializableObject(obj)) {
     return false
   }
-  const value = getTokenValue(obj)
-  const type = getTokenType(obj)
+
+  const token = obj as TokenData
+  const value = getTokenValue(token)
+  const type = getTokenType(token)
   return value !== null && type !== null
 }
 
@@ -160,7 +200,7 @@ const rgbaToRgb = (
  * Converts token value to Figma variable value based on type
  */
 const convertTokenValueToFigmaValue = (
-  value: any,
+  value: SerializableValue,
   type: string,
   variableMap: Map<string, Variable>,
 ): VariableValue => {
@@ -200,9 +240,14 @@ const convertTokenValueToFigmaValue = (
         } else if (value.startsWith('rgb')) {
           return rgbaToRgb(value)
         }
-      } else if (typeof value === 'object' && 'r' in value) {
+      } else if (
+        isSerializableObject(value) &&
+        'r' in value &&
+        'g' in value &&
+        'b' in value
+      ) {
         // Already in RGB format
-        return value
+        return value as RGBA
       }
       throw new Error(`Unsupported color format: ${value}`)
 
@@ -212,7 +257,7 @@ const convertTokenValueToFigmaValue = (
       if (typeof value === 'string') {
         return parseFloat(value.replace(/[a-z%]+$/i, ''))
       }
-      return parseFloat(value)
+      return Number(value)
 
     case 'boolean':
       return Boolean(value)
@@ -247,11 +292,11 @@ const mapTokenTypeToFigmaType = (
  * Extracts all tokens from a nested object structure
  */
 const extractTokens = (
-  obj: any,
+  obj: SerializableObject,
   path: string[] = [],
   collectionName: string,
-): Array<{ path: string; token: any; collectionName: string }> => {
-  const tokens: Array<{ path: string; token: any; collectionName: string }> = []
+): TokenEntry[] => {
+  const tokens: TokenEntry[] = []
 
   for (const key in obj) {
     if (
@@ -269,7 +314,7 @@ const extractTokens = (
     if (isToken(value)) {
       const tokenPath = [...path, key].join('/')
       tokens.push({ path: tokenPath, token: value, collectionName })
-    } else if (typeof value === 'object' && value !== null) {
+    } else if (isSerializableObject(value)) {
       // Recursively extract from nested objects
       tokens.push(...extractTokens(value, [...path, key], collectionName))
     }
@@ -282,7 +327,7 @@ const extractTokens = (
  * Import design tokens and create Figma variables
  */
 export const tokensToVariables = async (
-  tokensData: any,
+  tokensData: SerializableObject,
   resolver: IResolver,
 ): Promise<ImportResult> => {
   const result: ImportResult = {
@@ -317,12 +362,12 @@ export const tokensToVariables = async (
     delete cleanedData.$extensions
 
     // Extract all collections from the tokens
-    const collections: Map<string, any> = new Map()
+    const collections: Map<string, SerializableObject> = new Map()
 
     for (const collectionName in cleanedData) {
       const collectionData = cleanedData[collectionName]
 
-      if (typeof collectionData === 'object' && collectionData !== null) {
+      if (isSerializableObject(collectionData)) {
         collections.set(collectionName, collectionData)
       }
     }
@@ -343,7 +388,7 @@ export const tokensToVariables = async (
             result.collectionsCreated++
           } catch (error) {
             result.errors.push(
-              `Failed to create collection "${collectionName}": ${error.message}`,
+              `Failed to create collection "${collectionName}": ${getErrorMessage(error)}`,
             )
             continue
           }
@@ -358,12 +403,12 @@ export const tokensToVariables = async (
         const tokens = extractTokens(collectionData, [], collectionName)
 
         // Process tokens and check for modes
-        const modesData = new Map<string, Map<string, any>>()
+        const modesData = new Map<string, Map<string, ModeTokenValue>>()
 
         tokens.forEach(({ path, token }) => {
           const modes = token.$extensions?.mode || token.extensions?.mode
 
-          if (modes && typeof modes === 'object') {
+          if (isSerializableObject(modes)) {
             // Token has multiple mode values
             for (const modeName in modes) {
               if (!modesData.has(modeName)) {
@@ -393,7 +438,7 @@ export const tokensToVariables = async (
               collection.renameMode(collection.modes[0].modeId, firstModeName)
             } catch (error) {
               result.errors.push(
-                `Failed to rename default mode to "${firstModeName}": ${error.message}`,
+                `Failed to rename default mode to "${firstModeName}": ${getErrorMessage(error)}`,
               )
             }
           }
@@ -410,7 +455,7 @@ export const tokensToVariables = async (
                 collection.addMode(modeName)
               } catch (error) {
                 result.errors.push(
-                  `Failed to create mode "${modeName}" in collection "${collectionName}": ${error.message}`,
+                  `Failed to create mode "${modeName}" in collection "${collectionName}": ${getErrorMessage(error)}`,
                 )
               }
             }
@@ -427,7 +472,7 @@ export const tokensToVariables = async (
         // First pass: Create all variables (without setting values yet)
         const createdVariables: Array<{
           variable: Variable
-          token: any
+          token: TokenData
           path: string
         }> = []
         for (const { path, token } of tokens) {
@@ -489,7 +534,7 @@ export const tokensToVariables = async (
             }
           } catch (error) {
             result.errors.push(
-              `Failed to create variable at path "${path}": ${error.message}`,
+              `Failed to create variable at path "${path}": ${getErrorMessage(error)}`,
             )
           }
         }
@@ -503,23 +548,25 @@ export const tokensToVariables = async (
             if (typeof figma !== 'undefined') {
               // Set the default mode value
               const defaultMode = collection?.modes[0]
-              const figmaValue = convertTokenValueToFigmaValue(
-                tokenValue,
-                tokenType,
-                variableMap,
-              )
-
-              try {
-                variable.setValueForMode(defaultMode.modeId, figmaValue)
-              } catch (error) {
-                result.errors.push(
-                  `Failed to set value for variable "${path}": ${error.message}`,
+              if (defaultMode && tokenType) {
+                const figmaValue = convertTokenValueToFigmaValue(
+                  tokenValue,
+                  tokenType,
+                  variableMap,
                 )
+
+                try {
+                  variable.setValueForMode(defaultMode.modeId, figmaValue)
+                } catch (error) {
+                  result.errors.push(
+                    `Failed to set value for variable "${path}": ${getErrorMessage(error)}`,
+                  )
+                }
               }
 
               // Set values for other modes if they exist
               const modes = token.$extensions?.mode || token.extensions?.mode
-              if (modes && typeof modes === 'object') {
+              if (isSerializableObject(modes) && tokenType) {
                 for (const modeName in modes) {
                   const mode = collection?.modes.find(
                     (m) => m.name === modeName,
@@ -535,7 +582,7 @@ export const tokensToVariables = async (
                       variable.setValueForMode(mode.modeId, modeValue)
                     } catch (error) {
                       result.errors.push(
-                        `Failed to set value for mode "${modeName}" in variable "${path}": ${error.message}`,
+                        `Failed to set value for mode "${modeName}" in variable "${path}": ${getErrorMessage(error)}`,
                       )
                     }
                   }
@@ -544,13 +591,13 @@ export const tokensToVariables = async (
             }
           } catch (error) {
             result.errors.push(
-              `Failed to set value for variable at path "${path}": ${error.message}`,
+              `Failed to set value for variable at path "${path}": ${getErrorMessage(error)}`,
             )
           }
         }
       } catch (error) {
         result.errors.push(
-          `Failed to process collection "${collectionName}": ${error.message}`,
+          `Failed to process collection "${collectionName}": ${getErrorMessage(error)}`,
         )
       }
     }
@@ -594,7 +641,7 @@ export const tokensToVariables = async (
                   variable.setValueForMode(mode.modeId, aliasValue)
                 } catch (error) {
                   result.errors.push(
-                    `Failed to resolve alias for "${fullPath}": ${error.message}`,
+                    `Failed to resolve alias for "${fullPath}": ${getErrorMessage(error)}`,
                   )
                 }
               } else {
@@ -604,7 +651,7 @@ export const tokensToVariables = async (
           }
         } catch (error) {
           result.errors.push(
-            `Error in second pass for "${fullPath}": ${error.message}`,
+            `Error in second pass for "${fullPath}": ${getErrorMessage(error)}`,
           )
         }
       }
@@ -622,15 +669,18 @@ export const tokensToVariables = async (
       parts.push(`updated ${result.variablesUpdated} variable(s)`)
     }
 
-    result.message = `Successfully imported tokens. ${parts.join(', ')}.`
+    result.message = parts.length
+      ? `Successfully imported tokens. ${parts.join(', ')}.`
+      : 'Successfully imported tokens.'
 
     if (result.errors.length > 0) {
       result.message += ` ${result.errors.length} error(s) occurred during import.`
     }
   } catch (error) {
     result.success = false
-    result.message = `Import failed: ${error.message}`
-    result.errors.push(error.message)
+    const errorMessage = getErrorMessage(error)
+    result.message = `Import failed: ${errorMessage}`
+    result.errors.push(errorMessage)
   }
 
   return result

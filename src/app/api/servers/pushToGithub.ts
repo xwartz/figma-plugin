@@ -17,6 +17,7 @@ const HANDOFF_LABEL = 'design:handoff'
 const DEFAULT_TOKEN_COMMIT_MESSAGE = 'chore(design): update design tokens'
 const DEFAULT_PRIMITIVE_COMMIT_MESSAGE =
   'chore(design): update primitive handoff'
+const ISSUE_NUMBER_TEMPLATE_LITERAL = '$' + '{issueNumber}'
 
 function hasText(value?: string) {
   return Boolean(value?.trim())
@@ -44,7 +45,7 @@ function resolveTokenExportPath(credentials: GithubCredentialsI) {
   return fileName
     .replaceAll('<issue-number>', issueNumber)
     .replaceAll('{issue-number}', issueNumber)
-    .replaceAll('${issueNumber}', issueNumber)
+    .replaceAll(ISSUE_NUMBER_TEMPLATE_LITERAL, issueNumber)
 }
 
 function validateTemplateHandoff({
@@ -155,7 +156,7 @@ function getCommitMessage({
 
 export const pushToGithub = async (
   credentials: GithubCredentialsI,
-  tokens: any,
+  tokens: SerializableObject,
   toastCallback: (props: ToastIPropsI) => void,
 ) => {
   const ghToken = credentials.token
@@ -375,8 +376,7 @@ export const pushToGithub = async (
       : ''
 
     if (shouldSyncTokenExport) {
-      const response = await upsertTokenExport({ fileName, issueNumber })
-      console.log('File synced successfully:', response)
+      await upsertTokenExport({ fileName, issueNumber })
     }
 
     await updateIssueBody({

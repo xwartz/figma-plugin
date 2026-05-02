@@ -12,12 +12,15 @@ export const getAliasVariableName = async (
     variableId,
   )) as Variable | null
   if (!variableObj) {
-    console.log('cannot find variable', variableId)
     return '#missing#'
   }
   const collectionObj = (await resolver.getVariableCollectionById(
     variableObj.variableCollectionId,
   )) as VariableCollection | null
+
+  if (!collectionObj) {
+    return '#missing#'
+  }
 
   const variableName = variableObj.name
   const collectionName = collectionObj.name

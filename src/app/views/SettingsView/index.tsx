@@ -4,7 +4,7 @@ import { Toast, type ToastRefI } from '@app/components/Toast'
 import { config } from '@app/controller/config'
 import { ServerSettingsView } from '@app/views/ServerSettingsView'
 import pkg from '@root/package.json'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   Button,
   Dropdown,
@@ -32,7 +32,7 @@ interface ViewProps {
   setCurrentView: React.Dispatch<React.SetStateAction<string>>
   isCodePreviewOpen: boolean
   setIsCodePreviewOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setGeneratedTokens: React.Dispatch<React.SetStateAction<object>>
+  setGeneratedTokens: React.Dispatch<React.SetStateAction<SerializableObject>>
   currentView: string
   pluginCommand: PluginMenuCommand | null
   onPluginCommandHandled: () => void
@@ -92,57 +92,62 @@ export const SettingsView = (props: ViewProps) => {
     'design-tokens' | 'github'
   >('design-tokens')
 
-  //////////////////////
-  // HANDLE FUNCTIONS //
-  //////////////////////
-  const handleIncludeFigmaMetaDataChange = (checked: boolean) => {
-    console.log('handleIncludeFigmaMetaDataChange', checked)
-    setJSONsettingsConfig({
-      ...JSONsettingsConfig,
-      includeFigmaMetaData: checked,
-    })
-  }
+  const handleIncludeFigmaMetaDataChange = useCallback(
+    (checked: boolean) => {
+      setJSONsettingsConfig((prev) => ({
+        ...prev,
+        includeFigmaMetaData: checked,
+      }))
+    },
+    [setJSONsettingsConfig],
+  )
 
-  const handleIncludeScopesChange = (checked: boolean) => {
-    // console.log("handleIncludeScopesChange", checked);
+  const handleIncludeScopesChange = useCallback(
+    (checked: boolean) => {
+      setJSONsettingsConfig((prev) => ({
+        ...prev,
+        includeScopes: checked,
+      }))
+    },
+    [setJSONsettingsConfig],
+  )
 
-    setJSONsettingsConfig({
-      ...JSONsettingsConfig,
-      includeScopes: checked,
-    })
-  }
+  const handleDTCGKeys = useCallback(
+    (checked: boolean) => {
+      setJSONsettingsConfig((prev) => ({
+        ...prev,
+        useDTCGKeys: checked,
+      }))
+    },
+    [setJSONsettingsConfig],
+  )
 
-  const handleDTCGKeys = (checked: boolean) => {
-    // console.log("handleSplitFilesChange", checked);
+  const handleincludeValueStringKeyToAlias = useCallback(
+    (checked: boolean) => {
+      setJSONsettingsConfig((prev) => ({
+        ...prev,
+        includeValueStringKeyToAlias: checked,
+      }))
+    },
+    [setJSONsettingsConfig],
+  )
 
-    setJSONsettingsConfig({
-      ...JSONsettingsConfig,
-      useDTCGKeys: checked,
-    })
-  }
-
-  const handleincludeValueStringKeyToAlias = (checked: boolean) => {
-    // console.log("handleSplitFilesChange", checked);
-
-    setJSONsettingsConfig({
-      ...JSONsettingsConfig,
-      includeValueStringKeyToAlias: checked,
-    })
-  }
-
-  const handleUsePercentageOpacity = (checked: boolean) => {
-    setJSONsettingsConfig({
-      ...JSONsettingsConfig,
-      usePercentageOpacity: checked,
-    })
-  }
+  const handleUsePercentageOpacity = useCallback(
+    (checked: boolean) => {
+      setJSONsettingsConfig((prev) => ({
+        ...prev,
+        usePercentageOpacity: checked,
+      }))
+    },
+    [setJSONsettingsConfig],
+  )
 
   const handleShowOutput = () => {
-    setIsCodePreviewOpen(!isCodePreviewOpen)
+    setIsCodePreviewOpen((prev) => !prev)
     getTokensPreview()
   }
 
-  const startHeightResize = (event: React.MouseEvent<HTMLDivElement>) => {
+  const startHeightResize = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
 
     const startY = event.clientY
@@ -205,8 +210,6 @@ export const SettingsView = (props: ViewProps) => {
       (serverId) => JSONsettingsConfig.servers[serverId].isEnabled,
     )
 
-    console.log('all enebled servers', allEnabledServers)
-
     // send command to figma controller
     parent.postMessage(
       {
@@ -220,32 +223,33 @@ export const SettingsView = (props: ViewProps) => {
     )
   }
 
-  const openGithubIssueView = (
-    preferredTemplateKind: 'token' | 'primitive',
-  ) => {
-    setJSONsettingsConfig((prev) => ({
-      ...prev,
-      servers: {
-        ...prev.servers,
-        github: {
-          ...prev.servers.github,
-          preferredTemplateKind,
-          templateFile: '',
+  const openGithubIssueView = useCallback(
+    (preferredTemplateKind: 'token' | 'primitive') => {
+      setJSONsettingsConfig((prev) => ({
+        ...prev,
+        servers: {
+          ...prev.servers,
+          github: {
+            ...prev.servers.github,
+            preferredTemplateKind,
+            templateFile: '',
+          },
         },
-      },
-    }))
-    setCurrentView(
-      preferredTemplateKind === 'primitive'
-        ? 'github-primitive'
-        : 'github-token',
-    )
-  }
+      }))
+      setCurrentView(
+        preferredTemplateKind === 'primitive'
+          ? 'github-primitive'
+          : 'github-token',
+      )
+    },
+    [setCurrentView, setJSONsettingsConfig],
+  )
 
-  const openHelp = () => {
+  const openHelp = useCallback(() => {
     window.open(config.docsLink, '_blank')
-  }
+  }, [])
 
-  const handleClearCache = () => {
+  const handleClearCache = useCallback(() => {
     const shouldClearCache = window.confirm(
       'Clear saved plugin settings, GitHub credentials, and handoff form drafts? This cannot be undone.',
     )
@@ -263,16 +267,12 @@ export const SettingsView = (props: ViewProps) => {
         timeout: 3000,
       },
     })
-  }
+  }, [onClearCache])
 
-  const openExportSettings = () => {
+  const openExportSettings = useCallback(() => {
     setActiveSettingsTab('design-tokens')
     setCurrentView('settings')
-  }
-
-  /////////////////
-  // USE EFFECTS //
-  /////////////////
+  }, [setCurrentView])
 
   // Receive tokens from figma controller
   useEffect(() => {
@@ -283,19 +283,15 @@ export const SettingsView = (props: ViewProps) => {
 
       if (type === 'setTokens') {
         if (role === 'preview') {
-          // console.log("tokens preview", tokens);
           setGeneratedTokens(tokens)
         }
 
         if (role === 'download') {
-          // console.log("tokens download", tokens);
           downloadTokensFile(tokens, JSONsettingsConfig.splitByCollection)
         }
 
         if (role === 'push') {
           if (server.includes('github')) {
-            // console.log("github config", JSONsettingsConfig.servers.github);
-            console.log('push to github')
             const githubCredentials =
               pendingGithubCredentialsRef.current ??
               pendingGithubCredentials ??
@@ -308,7 +304,6 @@ export const SettingsView = (props: ViewProps) => {
           setIsPushing(false)
           setPendingGithubCredentials(undefined)
           pendingGithubCredentialsRef.current = undefined
-          console.log('push done')
         }
       }
     }
@@ -318,11 +313,7 @@ export const SettingsView = (props: ViewProps) => {
     return () => {
       window.removeEventListener('message', handleMessage)
     }
-  }, [
-    JSONsettingsConfig,
-    pendingGithubCredentials, // console.log("tokens preview", tokens);
-    setGeneratedTokens,
-  ])
+  }, [JSONsettingsConfig, pendingGithubCredentials, setGeneratedTokens])
 
   useEffect(() => {
     if (!pluginCommand) {
@@ -366,26 +357,16 @@ export const SettingsView = (props: ViewProps) => {
 
   //////////////
   useEffect(() => {
-    // reset isPushing to false after 10 second
-    if (isPushing) {
-      setTimeout(() => {
-        setIsPushing(false)
-      }, 10000)
+    if (!isPushing) {
+      return
     }
+
+    const timeout = setTimeout(() => {
+      setIsPushing(false)
+    }, 10000)
+
+    return () => clearTimeout(timeout)
   }, [isPushing])
-
-  //////////////////////
-  // RENDER VARIABLES //
-  //////////////////////
-
-  //
-  useEffect(() => {
-    console.log('JSONsettingsConfig Settings View >>>>', JSONsettingsConfig)
-  }, [JSONsettingsConfig])
-
-  /////////////////
-  // MAIN RENDER //
-  /////////////////
 
   const pluginMenuView = (
     <>
@@ -626,7 +607,7 @@ export const SettingsView = (props: ViewProps) => {
             <PanelHeader title="Include styles" isActive />
 
             <Stack hasLeftRightPadding={false} hasTopBottomPadding gap={2}>
-              {stylesList.map((item, index) => {
+              {stylesList.map((item) => {
                 const configStylesList = JSONsettingsConfig.includedStyles
                 const styleItem = configStylesList[item.id] || {
                   isIncluded: false,
@@ -638,7 +619,7 @@ export const SettingsView = (props: ViewProps) => {
 
                 return (
                   <Stack
-                    key={index}
+                    key={item.id}
                     direction="row"
                     gap="var(--space-extra-small)"
                   >
@@ -866,9 +847,6 @@ export const SettingsView = (props: ViewProps) => {
     </>
   )
 
-  // Select which view to render
-  // based on currentView state
-
   const commonProps = {
     JSONsettingsConfig,
     setJSONsettingsConfig,
@@ -938,7 +916,9 @@ export const SettingsView = (props: ViewProps) => {
           </Stack>
         </Panel>
 
-        <div
+        <button
+          type="button"
+          aria-label="Resize plugin height"
           className={styles.heightResizer}
           onMouseDown={startHeightResize}
           onDoubleClick={onResetHeight}

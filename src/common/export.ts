@@ -43,10 +43,20 @@ export const getTokens = async (
 
   if (config.splitByCollection) {
     // Return a map of { collectionName: tokens } where each entry gets its own meta
-    const result: Record<string, any> = {}
+    const result: Record<string, SerializableObject> = {}
     for (const key of Object.keys(mergedVariables)) {
+      const collectionTokens = mergedVariables[key]
+
+      if (
+        typeof collectionTokens !== 'object' ||
+        collectionTokens === null ||
+        Array.isArray(collectionTokens)
+      ) {
+        continue
+      }
+
       result[key] = {
-        ...mergedVariables[key],
+        ...collectionTokens,
         $extensions: { 'design-handoff-bridge-meta': metaData },
       }
     }
@@ -57,8 +67,6 @@ export const getTokens = async (
   mergedVariables.$extensions = {
     'design-handoff-bridge-meta': metaData,
   }
-
-  // console.log("mergedVariables", mergedVariables);
 
   return mergedVariables
 }
