@@ -1,12 +1,10 @@
-import { checkForVariables } from './checkForVariables'
-import { getStorageConfig } from './getStorageConfig'
-
 import { PluginAPIResolver } from '@app/api/pluginApiResolver'
 import { getTokens } from '@common/export'
+import { checkForVariables } from './checkForVariables'
 import { config } from './config'
+import { getStorageConfig } from './getStorageConfig'
 
 const pluginConfigKey = 'design-handoff-bridge-config'
-getStorageConfig(pluginConfigKey)
 
 let isCodePreviewOpen = false
 
@@ -23,28 +21,10 @@ figma.showUI(__html__, {
 
 let JSONSettingsConfig: JSONSettingsConfigI
 const pluginCommand = figma.command as PluginMenuCommand
-let didSendPluginCommand = false
-
-function sendPluginCommand() {
-  if (!pluginCommand || pluginCommand === 'help' || didSendPluginCommand) {
-    return
-  }
-
-  didSendPluginCommand = true
-  figma.ui.postMessage({
-    type: 'pluginCommand',
-    tokens: null,
-    role: 'preview',
-    server: [],
-    command: pluginCommand,
-  } as TokensMessageI)
-}
 
 if (pluginCommand === 'help') {
   figma.openExternal(config.docsLink)
   figma.closePlugin()
-} else if (pluginCommand) {
-  setTimeout(sendPluginCommand, 50)
 }
 
 function getCurrentFigmaContext(): FigmaSelectionContextI {
@@ -77,7 +57,7 @@ figma.on('selectionchange', () => {
 // listen for messages from the UI
 figma.ui.onmessage = async (msg) => {
   if (msg.type === 'uiReady') {
-    sendPluginCommand()
+    await getStorageConfig(pluginConfigKey, pluginCommand || undefined)
     return
   }
 

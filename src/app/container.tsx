@@ -52,9 +52,36 @@ const getDefaultSettingsConfig = (): JSONSettingsConfigI => ({
   },
 })
 
+function getInitialViewForPluginCommand(command?: PluginMenuCommand) {
+  if (command === 'export-design-token-json' || command === 'settings') {
+    return 'settings'
+  }
+
+  if (command === 'send-design-token-to-issue') {
+    return 'github-token'
+  }
+
+  if (command === 'send-design-primitive-to-issue') {
+    return 'github-primitive'
+  }
+
+  return undefined
+}
+
+function getGithubIssueKindForPluginCommand(command?: PluginMenuCommand) {
+  if (command === 'send-design-token-to-issue') {
+    return 'token'
+  }
+
+  if (command === 'send-design-primitive-to-issue') {
+    return 'primitive'
+  }
+
+  return undefined
+}
+
 const Container = () => {
   const wrapperRef = React.useRef<HTMLDivElement | null>(null)
-  const hasSyncedSettingsRef = React.useRef(false)
   const hasSyncedPreviewRef = React.useRef(false)
   const previewHeightRef = React.useRef(0)
 
@@ -74,6 +101,7 @@ const Container = () => {
     null,
   )
   const [fileHasVariables, setFileHasVariables] = useState(false)
+  const [hasLoadedStorageConfig, setHasLoadedStorageConfig] = useState(false)
 
   const [JSONsettingsConfig, setJSONsettingsConfig] = useState(
     getDefaultSettingsConfig,
@@ -90,8 +118,13 @@ const Container = () => {
     parent.postMessage({ pluginMessage: { type: 'checkForVariables' } }, '*')
 
     window.onmessage = (event) => {
-      const { type, hasVariables, variableCollections, storageConfig } =
-        event.data.pluginMessage
+      const {
+        type,
+        hasVariables,
+        variableCollections,
+        storageConfig,
+        command,
+      } = event.data.pluginMessage
 
       // check if file has variables
       if (type === 'checkForVariables') {
@@ -108,22 +141,60 @@ const Container = () => {
 
       // check storage on load
       if (type === 'storageConfig') {
-        if (storageConfig) {
-          setJSONsettingsConfig((prev) => ({
-            ...prev,
-            ...storageConfig,
-            servers: {
-              github: storageConfig.servers?.github ?? prev.servers.github,
-            },
-            // Ensure new properties have defaults for backward compatibility
-            colorMode: storageConfig.colorMode ?? prev.colorMode,
-            includeScopes: storageConfig.includeScopes ?? prev.includeScopes,
-            useDTCGKeys: storageConfig.useDTCGKeys ?? prev.useDTCGKeys,
-            includeFigmaMetaData:
-              storageConfig.includeFigmaMetaData ?? prev.includeFigmaMetaData,
-            splitByCollection: storageConfig.splitByCollection ?? false,
-          }))
+        const initialView = getInitialViewForPluginCommand(command)
+        const githubIssueKind = getGithubIssueKindForPluginCommand(command)
+
+        if (initialView) {
+          setCurrentView(initialView)
         }
+
+        if (command) {
+          setPluginCommand(command)
+        }
+
+        setJSONsettingsConfig((prev) => {
+          const nextConfig = storageConfig
+            ? {
+                ...prev,
+                ...storageConfig,
+                servers: {
+                  ...prev.servers,
+                  ...storageConfig.servers,
+                  github: {
+                    ...prev.servers.github,
+                    ...storageConfig.servers?.github,
+                  },
+                },
+                // Ensure new properties have defaults for backward compatibility
+                colorMode: storageConfig.colorMode ?? prev.colorMode,
+                includeScopes:
+                  storageConfig.includeScopes ?? prev.includeScopes,
+                useDTCGKeys: storageConfig.useDTCGKeys ?? prev.useDTCGKeys,
+                includeFigmaMetaData:
+                  storageConfig.includeFigmaMetaData ??
+                  prev.includeFigmaMetaData,
+                splitByCollection: storageConfig.splitByCollection ?? false,
+              }
+            : prev
+
+          if (!githubIssueKind) {
+            return nextConfig
+          }
+
+          return {
+            ...nextConfig,
+            servers: {
+              ...nextConfig.servers,
+              github: {
+                ...nextConfig.servers.github,
+                preferredTemplateKind: githubIssueKind,
+                templateFile: '',
+              },
+            },
+          }
+        })
+
+        setHasLoadedStorageConfig(true)
       }
     }
   }, [])
@@ -225,8 +296,7 @@ const Container = () => {
   }, [manualFrameHeight, frameHeight])
 
   useEffect(() => {
-    if (!hasSyncedSettingsRef.current) {
-      hasSyncedSettingsRef.current = true
+    if (!hasLoadedStorageConfig) {
       return
     }
 
@@ -239,7 +309,7 @@ const Container = () => {
       },
       '*',
     )
-  }, [JSONsettingsConfig])
+  }, [JSONsettingsConfig, hasLoadedStorageConfig])
 
   useEffect(() => {
     if (!hasSyncedPreviewRef.current) {
@@ -302,7 +372,7 @@ const Container = () => {
   }
 
   const renderView = () => {
-    if (isLoading) {
+    if (isLoading || !hasLoadedStorageConfig) {
       return <LoadingView />
     }
 

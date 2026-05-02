@@ -10,7 +10,6 @@ import type React from 'react'
 import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
-  Input,
   NativeDropdown,
   Panel,
   PanelHeader,
@@ -281,6 +280,19 @@ export const ServerSettingsView = (props: ViewProps) => {
       preferredTemplateKind,
     })
 
+  useEffect(() => {
+    setConfig((prev) => ({
+      ...DEFAULT_GITHUB_CONFIG,
+      ...prev,
+      ...JSONsettingsConfig.servers.github,
+      issueState: prev.issueState,
+      issueStateByKind:
+        JSONsettingsConfig.servers.github.issueStateByKind ??
+        prev.issueStateByKind,
+      preferredTemplateKind,
+    }))
+  }, [JSONsettingsConfig.servers.github, preferredTemplateKind])
+
   const selectedTemplate = useMemo(() => {
     return templates.find(
       (template) => template.fileName === selectedTemplateFile,
@@ -495,30 +507,18 @@ export const ServerSettingsView = (props: ViewProps) => {
           {field.label}
           {field.required && <span className={styles.required}> *</span>}
         </label>
-        {field.inputType === 'password' ? (
-          <input
-            id={field.id}
-            className={`${styles.input} ${isInvalid ? styles.invalid : ''}`}
-            type="password"
-            placeholder={field.placeholder}
-            value={value}
-            autoComplete="off"
-            spellCheck={false}
-            onChange={(event) => onChange(event.target.value)}
-            onBlur={(event) => handleBlur(event.target.value)}
-            onFocus={handleFocus}
-          />
-        ) : (
-          <Input
-            id={field.id}
-            placeholder={field.placeholder}
-            value={value}
-            isInvalid={isInvalid}
-            onChange={onChange}
-            onBlur={handleBlur}
-            onFocus={handleFocus}
-          />
-        )}
+        <input
+          id={field.id}
+          className={`${styles.input} ${isInvalid ? styles.invalid : ''}`}
+          type={field.inputType ?? 'text'}
+          placeholder={field.placeholder}
+          value={value}
+          autoComplete="off"
+          spellCheck={false}
+          onChange={(event) => onChange(event.target.value)}
+          onBlur={(event) => handleBlur(event.target.value)}
+          onFocus={handleFocus}
+        />
       </div>
     )
   }

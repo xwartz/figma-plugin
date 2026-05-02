@@ -1,4 +1,7 @@
-export const getStorageConfig = async (key: string) => {
+export const getStorageConfig = async (
+  key: string,
+  command?: PluginMenuCommand,
+) => {
   const storageVersionKey = 'design-handoff-bridge-storage'
   const actualStorageVersion = 'v1'
 
@@ -16,6 +19,7 @@ export const getStorageConfig = async (key: string) => {
     figma.ui.postMessage({
       type: 'storageConfig',
       storageConfig: null,
+      command,
     })
     return
   }
@@ -24,11 +28,13 @@ export const getStorageConfig = async (key: string) => {
     figma.ui.postMessage({
       type: 'storageConfig',
       storageConfig: JSON.parse(storedConfig),
+      command,
     })
   } catch {
     figma.ui.postMessage({
       type: 'storageConfig',
       storageConfig: null,
+      command,
     })
   }
 }
