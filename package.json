@@ -22,14 +22,19 @@
   },
   "scripts": {
     "build:plugin": "node scripts/build-plugin.mjs",
-    "build": "npm run build:plugin",
+    "build": "pnpm run build:plugin",
     "dev": "node --watch-path=src --watch-path=manifest.json scripts/build-plugin.mjs",
     "release:community": "node scripts/figma-community-release.mjs",
     "format": "biome format --write .",
+    "format:check": "biome format .",
     "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
     "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "check:fix:unsafe": "biome check --write --unsafe .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "verify": "pnpm run check && pnpm run test && pnpm run build"
   },
   "type": "commonjs",
   "dependencies": {

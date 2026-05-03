@@ -1,8 +1,8 @@
+import { spawn } from 'node:child_process'
 import { createReadStream } from 'node:fs'
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import path from 'node:path'
-import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -14,10 +14,7 @@ const sourceHtmlPath = path.join(
   sourceDir,
   'design_handoff_bridge_community_2.html',
 )
-const sourceIconPath = path.join(
-  sourceDir,
-  'design_handoff_bridge_icon_2.svg',
-)
+const sourceIconPath = path.join(sourceDir, 'design_handoff_bridge_icon_2.svg')
 
 const frames = [
   {

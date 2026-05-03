@@ -13,7 +13,7 @@ Source: Figma Help, "Publish plugins to the Figma Community".
 - Align `package.json` version, `CHANGELOG.md`, release tag, GitHub release notes, and the Figma update notes.
 - Confirm `package.json` repository, `src/app/controller/config.ts`, README support text, and the Community support contact point to the same public repository.
 - Confirm the default branch used by CI, release automation, and `config.changelogLink` is the same branch.
-- Run `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm lint`, and `pnpm build`.
+- Run `pnpm install --frozen-lockfile`, `pnpm verify`.
 - Test the plugin with a real GitHub repository and a valid personal access token.
 - Remove personal tokens, private repository names, private Figma content, and internal screenshots from all demo assets.
 

@@ -1,13 +1,22 @@
+name: release
+
 on:
   push:
-    tags:
-      - 'v*'
-name: release
+    branches:
+      - master
+  workflow_dispatch:
+
 permissions:
   contents: write
   packages: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -28,19 +37,28 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Prepare version and changelog
+        id: release
+        run: node scripts/prepare-release.mjs
+        env:
+          RELEASE_NOTES_PATH: ${{ runner.temp }}/release-notes.md
+
       - name: Build package
+        if: steps.release.outputs.should_release == 'true'
         run: pnpm run build
 
-      - name: Create GitHub release
-        run: gh release create ${{ github.ref_name }} ./dist/figma-plugin.zip --title "${{ github.ref_name }}" --generate-notes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update CHANGELOG.md
+      - name: Commit release changes
+        if: steps.release.outputs.should_release == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          pnpm exec conventional-changelog -p conventionalcommits -i CHANGELOG.md -s -r 1
-          git add CHANGELOG.md
-          git diff --staged --quiet || git commit -m "docs: update CHANGELOG for ${{ github.ref_name }}"
-          git push origin HEAD:master
+          git add package.json CHANGELOG.md
+          git commit -m "chore(release): ${{ steps.release.outputs.tag }} [skip ci]"
+          git tag -a "${{ steps.release.outputs.tag }}" -m "${{ steps.release.outputs.tag }}"
+          git push origin HEAD:${{ github.ref_name }} "${{ steps.release.outputs.tag }}"
+
+      - name: Create GitHub release
+        if: steps.release.outputs.should_release == 'true'
+        run: gh release create "${{ steps.release.outputs.tag }}" ./dist/figma-plugin.zip --title "${{ steps.release.outputs.tag }}" --notes-file "${{ runner.temp }}/release-notes.md"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

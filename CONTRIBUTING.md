@@ -28,19 +28,19 @@ Load the plugin in Figma with **Plugins -> Development -> Import plugin from man
 Run formatting and lint checks:
 
 ```bash
-pnpm run check
+pnpm check
 ```
 
 Run tests:
 
 ```bash
-pnpm exec vitest run
+pnpm test
 ```
 
 Build the plugin:
 
 ```bash
-pnpm run build
+pnpm build
 ```
 
 ## Project Structure

@@ -59,8 +59,7 @@ pnpm build
 Run verification:
 
 ```bash
-pnpm lint
-pnpm test
+pnpm verify
 ```
 
 Build output is written to `dist/figma-plugin/`, with a zip artifact at `dist/figma-plugin.zip`.
