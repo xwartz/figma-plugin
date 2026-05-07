@@ -55,7 +55,7 @@
     "conventional-changelog": "7.2.0",
     "conventional-changelog-conventionalcommits": "9.3.1",
     "react": "19.2.6",
-    "react-dom": "19.2.5",
+    "react-dom": "19.2.6",
     "react-figma-ui": "github:PavelLaptev/react-figma-ui#4c8d20dbd911c0008fd4d0b20280f14404f186e7",
     "typescript": "6.0.3",
     "vite": "8.0.10",
