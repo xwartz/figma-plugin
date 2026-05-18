@@ -6,6 +6,11 @@ Design Handoff Bridge is a Figma plugin for design-system teams that need a clea
 
 Inspired by [TokensBrücke](https://github.com/tokens-bruecke/figma-plugin).
 
+## How to use
+1. Install the plugin from the [Figma Community](https://www.figma.com/community/plugin/1632407867480166867).
+2. Run the plugin.
+3. Adjust the settings.
+
 ## Requirements
 
 - A GitHub repository that accepts design handoff issues.
