@@ -47,7 +47,7 @@
     "@biomejs/biome": "2.4.15",
     "@figma/plugin-typings": "1.126.0",
     "@octokit/core": "7.0.6",
-    "@types/node": "25.8.0",
+    "@types/node": "25.9.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "buffer": "6.0.3",
