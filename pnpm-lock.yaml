@@ -25,8 +25,8 @@ importers:
         specifier: 2.4.15
         version: 2.4.15
       '@figma/plugin-typings':
-        specifier: 1.126.0
-        version: 1.126.0
+        specifier: 1.127.0
+        version: 1.127.0
       '@octokit/core':
         specifier: 7.0.6
         version: 7.0.6
@@ -650,8 +650,8 @@ packages:
   '@emnapi/wasi-threads@1.2.1':
     resolution: {integrity: sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w==}
 
-  '@figma/plugin-typings@1.126.0':
-    resolution: {integrity: sha512-7Y8HPIHWgMUoT1L7InyUe5X6S+gPUSlVLi7TQvwnRev6PjDwwNkM/oSio2t69EvsJ+TRPSJSvO7xph+KHIcWeQ==}
+  '@figma/plugin-typings@1.127.0':
+    resolution: {integrity: sha512-Y8fjfUCdWN6bUTs1wsd9GFZ3zF4USDVNmmxfUo/4Ia7NmFemSK2nBxOu7BKcusEHCERwiO7N8iOqw5jwvbL80g==}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -2306,7 +2306,7 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@figma/plugin-typings@1.126.0': {}
+  '@figma/plugin-typings@1.127.0': {}
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
