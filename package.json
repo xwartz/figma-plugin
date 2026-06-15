@@ -59,7 +59,7 @@
     "react-figma-ui": "github:PavelLaptev/react-figma-ui#4c8d20dbd911c0008fd4d0b20280f14404f186e7",
     "typescript": "6.0.3",
     "vite": "8.0.16",
-    "vitest": "4.1.8",
+    "vitest": "4.1.9",
     "yaml": "2.9.0"
   },
   "packageManager": "pnpm@10.33.1"
