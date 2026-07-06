@@ -53,7 +53,7 @@
     "buffer": "6.0.3",
     "clipboard-copy": "4.0.1",
     "conventional-changelog": "8.0.0",
-    "conventional-changelog-conventionalcommits": "10.2.0",
+    "conventional-changelog-conventionalcommits": "10.2.1",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-figma-ui": "github:PavelLaptev/react-figma-ui#4c8d20dbd911c0008fd4d0b20280f14404f186e7",
