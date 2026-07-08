@@ -57,7 +57,7 @@
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-figma-ui": "github:PavelLaptev/react-figma-ui#4c8d20dbd911c0008fd4d0b20280f14404f186e7",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "vite": "8.1.3",
     "vitest": "4.1.10",
     "yaml": "2.9.0"
