@@ -55,8 +55,8 @@ importers:
         specifier: 19.2.8
         version: 19.2.8
       react-dom:
-        specifier: 19.2.7
-        version: 19.2.7(react@19.2.8)
+        specifier: 19.2.8
+        version: 19.2.8(react@19.2.8)
       react-figma-ui:
         specifier: github:PavelLaptev/react-figma-ui#4c8d20dbd911c0008fd4d0b20280f14404f186e7
         version: https://codeload.github.com/PavelLaptev/react-figma-ui/tar.gz/4c8d20dbd911c0008fd4d0b20280f14404f186e7
@@ -1389,10 +1389,10 @@ packages:
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
 
-  react-dom@19.2.7:
-    resolution: {integrity: sha512-t0BRVXvbiE/o20Hfw669rLbMCDWtYZLvmJigy2f0MxsXF+71pxhR3xOkspmsO8h3ZlNzyibAmtCa3l4lYKk6gQ==}
+  react-dom@19.2.8:
+    resolution: {integrity: sha512-rVprimfGBG3DR+Tq0IQG2DT5PxKth1WIGDmj5yPmlzr4YBe7uyE+Du4oVqTDXZSHGGGXRtTJEGSSePyQCMBglQ==}
     peerDependencies:
-      react: ^19.2.7
+      react: ^19.2.8
 
   react-figma-ui@https://codeload.github.com/PavelLaptev/react-figma-ui/tar.gz/4c8d20dbd911c0008fd4d0b20280f14404f186e7:
     resolution: {tarball: https://codeload.github.com/PavelLaptev/react-figma-ui/tar.gz/4c8d20dbd911c0008fd4d0b20280f14404f186e7}
@@ -2976,7 +2976,7 @@ snapshots:
 
   process-nextick-args@2.0.1: {}
 
-  react-dom@19.2.7(react@19.2.8):
+  react-dom@19.2.8(react@19.2.8):
     dependencies:
       react: 19.2.8
       scheduler: 0.27.0
