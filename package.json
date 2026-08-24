@@ -44,7 +44,7 @@
   "devDependencies": {
     "@babel/core": "7.29.7",
     "@babel/preset-env": "7.29.7",
-    "@biomejs/biome": "2.5.9",
+    "@biomejs/biome": "2.5.10",
     "@figma/plugin-typings": "1.134.0",
     "@octokit/core": "7.0.7",
     "@types/node": "26.2.0",
