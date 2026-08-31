@@ -25,8 +25,8 @@ importers:
         specifier: 2.5.11
         version: 2.5.11
       '@figma/plugin-typings':
-        specifier: 1.135.0
-        version: 1.135.0
+        specifier: 1.136.0
+        version: 1.136.0
       '@octokit/core':
         specifier: 7.0.7
         version: 7.0.7
@@ -645,8 +645,8 @@ packages:
     resolution: {integrity: sha512-aalGyl7dbB5PArRebDIX43ZvBlXrYm9uWzGJ26t+4SzJVPsOuvfILGGbw5X4yX7i50YEmJ8zvbiWnqH/AAnZqg==}
     engines: {node: '>=22'}
 
-  '@figma/plugin-typings@1.135.0':
-    resolution: {integrity: sha512-vP9ftEPH2uKaDAiFr8e6ZHYe2yaK+sYuZgVS8okOT51cdQjg/LK7w7rLPSge0vN/zcKsQX6kel4LQi1z14nM0A==}
+  '@figma/plugin-typings@1.136.0':
+    resolution: {integrity: sha512-a+SbYX1SN8LYMSQ9PsmUtec6NMAbTcOq8O1vdBOVtYf+xhDD6o2GHUgeygOZ64TUKD6fKNm2SpHLFfHoDzxsXA==}
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -2341,7 +2341,7 @@ snapshots:
 
   '@conventional-changelog/template@1.4.0': {}
 
-  '@figma/plugin-typings@1.135.0': {}
+  '@figma/plugin-typings@1.136.0': {}
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:
