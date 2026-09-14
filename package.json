@@ -39,7 +39,7 @@
   "type": "commonjs",
   "dependencies": {
     "decimal.js": "10.6.0",
-    "jszip": "3.10.1"
+    "jszip": "3.10.2"
   },
   "devDependencies": {
     "@babel/core": "7.29.7",
